@@ -607,7 +607,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.2</span></div>
+    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.3</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div id="apiIndicator" onclick="toggleApiPanel()" style="cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:700;color:var(--muted);font-family:'SF Mono','Courier New',monospace;">
         🔑 KEY
@@ -793,6 +793,8 @@ const BRAND_COLORS = {
 window.onload = () => {
   const DEFAULT_KEY = 'AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY';
   const savedKey = localStorage.getItem('pricescout_apikey') || DEFAULT_KEY;
+  localStorage.setItem('pricescout_model', 'gemini-2.5-flash');
+  activeModel = 'gemini-2.5-flash';
   if (savedKey) {
     document.getElementById('apiKey').value = savedKey;
     document.getElementById('apiStatus').textContent = '✅ Salva';
@@ -880,14 +882,11 @@ function updateApiIndicator(hasKey) {
 
 
 const GEMINI_MODELS = [
-  'gemini-2.5-flash-preview-05-20',
   'gemini-2.5-flash',
-  'gemini-2.5-pro',
-  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-001',
   'gemini-2.0-flash-lite',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-flash',
-  'gemini-1.5-pro-latest'
+  'gemini-flash-latest'
 ];
 let activeModel = localStorage.getItem('pricescout_model') || GEMINI_MODELS[0];
 
