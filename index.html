@@ -607,7 +607,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.1</span></div>
+    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.2</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div id="apiIndicator" onclick="toggleApiPanel()" style="cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:700;color:var(--muted);font-family:'SF Mono','Courier New',monospace;">
         🔑 KEY
@@ -791,7 +791,8 @@ const BRAND_COLORS = {
 
 // ─── INIT ─────────────────────────────────────────────────
 window.onload = () => {
-  const savedKey = localStorage.getItem('pricescout_apikey');
+  const DEFAULT_KEY = 'AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY';
+  const savedKey = localStorage.getItem('pricescout_apikey') || DEFAULT_KEY;
   if (savedKey) {
     document.getElementById('apiKey').value = savedKey;
     document.getElementById('apiStatus').textContent = '✅ Salva';
