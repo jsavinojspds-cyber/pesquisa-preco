@@ -131,7 +131,8 @@
     overflow: hidden;
     background: var(--card);
     position: relative;
-    aspect-ratio: 4/3;
+    height: 220px;
+    max-height: 220px;
     cursor: pointer;
     transition: border-color 0.2s;
     display: flex;
@@ -606,7 +607,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v1.8</span></div>
+    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.0</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div id="apiIndicator" onclick="toggleApiPanel()" style="cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:700;color:var(--muted);font-family:'SF Mono','Courier New',monospace;">
         🔑 KEY
@@ -656,7 +657,16 @@
     <input type="file" id="fileInput" accept="image/*">
 
     <div id="locationStatus" class="location-status" style="display:none"></div>
-    <div id="locationBadge" class="location-badge" style="display:none"></div>
+    <div id="locationBadge" class="location-badge" style="display:none;justify-content:space-between;">
+      <span id="locationBadgeText"></span>
+      <button onclick="getLiveLocation()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;padding:0;white-space:nowrap;">🔄 Atualizar</button>
+    </div>
+
+    <div style="margin-top:10px;">
+      <button onclick="getLiveLocation()" id="btnGPS" class="gallery-btn" style="width:100%;padding:11px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;font-size:13px;font-weight:700;">
+        📍 Usar localização atual do celular
+      </button>
+    </div>
 
     <div class="form-grid">
       <div>
@@ -869,12 +879,11 @@ function updateApiIndicator(hasKey) {
 
 
 const GEMINI_MODELS = [
-  'gemini-2.5-flash-preview-04-17',
+  'gemini-2.5-flash-preview-05-20',
   'gemini-2.5-flash',
   'gemini-2.0-flash-exp',
   'gemini-2.0-flash-lite',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-flash'
+  'gemini-1.5-flash-latest'
 ];
 let activeModel = localStorage.getItem('pricescout_model') || GEMINI_MODELS[0];
 
@@ -954,7 +963,34 @@ function handleFileSelect(e) {
   reader.readAsDataURL(file);
 }
 
-// ─── EXIF GPS ─────────────────────────────────────────────
+// ─── GPS AO VIVO ──────────────────────────────────────────
+function getLiveLocation() {
+  const btn = document.getElementById('btnGPS');
+  if (!navigator.geolocation) {
+    showToast('⚠️ GPS não disponível neste dispositivo', '#f59e0b');
+    return;
+  }
+  btn.textContent = '⏳ Obtendo localização...';
+  btn.disabled = true;
+  setLocationStatus('📍 Aguardando GPS...');
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      btn.innerHTML = '📍 Usar localização atual do celular';
+      btn.disabled = false;
+      reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+    },
+    err => {
+      btn.innerHTML = '📍 Usar localização atual do celular';
+      btn.disabled = false;
+      setLocationStatus('⚠️ Permissão de GPS negada');
+      showToast('⚠️ Permita acesso ao GPS nas configurações', '#f59e0b');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+
 function extractGPSFromEXIF(file) {
   setLocationStatus('📍 Lendo localização da foto...');
   const reader = new FileReader();
@@ -1092,9 +1128,10 @@ function setLocationStatus(msg) {
 }
 
 function showLocationBadge(addr) {
-  let badge = document.getElementById('locationBadge');
-  if (!badge) return;
-  badge.textContent = '📍 ' + addr;
+  const badge = document.getElementById('locationBadge');
+  const text = document.getElementById('locationBadgeText');
+  if (!badge || !text) return;
+  text.textContent = '📍 ' + addr;
   badge.style.display = 'flex';
 }
 
