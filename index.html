@@ -606,7 +606,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v1.7</span></div>
+    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v1.8</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div id="apiIndicator" onclick="toggleApiPanel()" style="cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:700;color:var(--muted);font-family:'SF Mono','Courier New',monospace;">
         🔑 KEY
@@ -869,11 +869,12 @@ function updateApiIndicator(hasKey) {
 
 
 const GEMINI_MODELS = [
-  'gemini-2.0-flash',
+  'gemini-2.5-flash-preview-04-17',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash-exp',
   'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
   'gemini-1.5-flash-latest',
-  'gemini-pro'
+  'gemini-1.5-flash'
 ];
 let activeModel = localStorage.getItem('pricescout_model') || GEMINI_MODELS[0];
 
