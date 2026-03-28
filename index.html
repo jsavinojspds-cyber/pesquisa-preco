@@ -3,535 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout</title>
+    <title>PriceScout v2.5</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PriceScout">
     <meta name="theme-color" content="#00e5ff">
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==">
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055644.png">
 
     <style>
         :root {
-            --bg: #0a0a0f;
-            --card: #16161e;
-            --accent: #00e5ff;
-            --text: #ffffff;
-            --text-dim: #a0a0ab;
-            --danger: #ff4d4d;
-            --success: #10b981;
-            
-            /* Cores por Marca */
-            --brand-dabelle: #e91e8c;
-            --brand-salonline: #ff6b35;
-            --brand-elseve: #3b82f6;
-            --brand-ox: #8b5cf6;
-            --brand-loreal: #f59e0b;
-            --brand-dove: #06b6d4;
-            --brand-pantene: #10b981;
+            --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #ffffff;
+            --brand-dabelle: #e91e8c; --brand-salonline: #ff6b35; --brand-elseve: #3b82f6;
+            --brand-ox: #8b5cf6; --brand-loreal: #f59e0b; --brand-dove: #06b6d4; --brand-pantene: #10b981;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 80px 16px 100px 16px;
-            overflow-x: hidden;
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 0; padding: 90px 16px 100px 16px;
         }
 
-        /* Header */
+        /* Header Fix */
         header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 70px;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 1000;
-            border-bottom: 1px solid #1f1f2e;
+            position: fixed; top: 0; left: 0; right: 0; height: 75px;
+            background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 1000; border-bottom: 1px solid #1f1f2e;
         }
 
-        .logo { font-weight: 800; font-size: 20px; color: var(--accent); letter-spacing: -0.5px; }
-        .v-tag { font-size: 10px; background: #1f1f2e; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
-        .header-tools { display: flex; align-items: center; gap: 15px; }
-        .counter { font-size: 12px; color: var(--text-dim); }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 85px;
-            background: rgba(22, 22, 30, 0.95);
-            backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: space-around;
-            padding-bottom: 20px;
-            z-index: 1000;
-            border-top: 1px solid #1f1f2e;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dim);
-            text-decoration: none;
-            font-size: 11px;
-            transition: 0.2s;
-            background: none; border: none; width: 33%;
-        }
-        .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 24px; margin-bottom: 4px; }
-
-        /* Views */
-        .view { display: none; animation: fadeIn 0.3s ease; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* UI Components */
-        .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .logo { font-weight: 800; font-size: 22px; color: var(--accent); }
+        .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+        
+        /* UI Elements */
+        .card { background: var(--card); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid #1f1f2e; }
         .btn {
-            background: var(--accent); color: #000; border: none;
-            border-radius: 12px; padding: 12px 20px; font-weight: 600;
-            width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 15px; cursor: pointer;
+            background: var(--accent); color: #000; border: none; border-radius: 14px;
+            padding: 16px; font-weight: 700; width: 100%; font-size: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-        .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+        .btn:disabled { opacity: 0.5; filter: grayscale(1); }
+        
+        #photo-preview { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; }
 
-        label { display: block; font-size: 12px; color: var(--text-dim); margin: 12px 0 6px 4px; }
         input, select {
-            background: #1f1f2e; border: 1px solid #2e2e42; color: white;
-            padding: 12px; border-radius: 10px; width: 100%; font-size: 16px;
+            background: #000; border: 1px solid #2e2e42; color: white;
+            padding: 14px; border-radius: 12px; width: 100%; margin-bottom: 12px; font-size: 16px;
         }
 
-        /* Camera & Preview */
-        #photo-preview {
-            width: 100%; height: 220px; object-fit: cover; border-radius: 12px;
-            margin-top: 10px; background: #000; display: none;
+        /* Nav */
+        nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(22, 22, 30, 0.95); display: flex; border-top: 1px solid #1f1f2e;
         }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 11px; text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
+
+        /* AI Loading */
+        .loading-zone { display: none; text-align: center; margin: 20px 0; }
+        .bar-bg { background: #1f1f2e; height: 4px; border-radius: 2px; overflow: hidden; margin-top: 10px; }
+        .bar-fill { height: 100%; background: var(--accent); width: 40%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
 
         /* API Panel */
-        #api-panel {
-            position: fixed; top: 75px; right: 16px; left: 16px;
-            background: var(--card); border: 1px solid var(--accent);
-            border-radius: 16px; padding: 20px; z-index: 1001; display: none;
-        }
-
-        /* Loading Bar */
-        .loading-container { display: none; margin: 20px 0; }
-        .loading-bar { height: 4px; background: #1f1f2e; border-radius: 2px; overflow: hidden; }
-        .loading-progress { height: 100%; background: var(--accent); width: 30%; animation: scan 1.5s infinite ease-in-out; }
-        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
-
-        /* Products Grid */
-        .product-card {
-            border-left: 4px solid var(--accent);
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; padding: 10px; background: #1f1f2e; border-radius: 8px;
-        }
-        .badge-promo { background: var(--danger); color: white; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
-
-        /* Dashboard Stats */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; }
-        .stat-val { display: block; font-size: 24px; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
-
-        .price-bar-bg { background: #1f1f2e; height: 8px; border-radius: 4px; margin-top: 8px; position: relative; }
-        .price-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        #api-config { position: fixed; top: 80px; left: 16px; right: 16px; background: #16161e; border: 1px solid var(--accent); border-radius: 20px; padding: 20px; z-index: 2000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">PriceScout<span class="v-tag">v2.4</span></div>
-        <div class="header-tools">
-            <span class="counter" id="reg-count">0 registros</span>
-            <button onclick="toggleApiPanel()" style="background:none; border:none; font-size:20px;">🔑</button>
-            <span id="key-status"></span>
+        <div class="logo">PriceScout<span class="v-tag">v2.5</span></div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div id="status-dot" style="width:8px; height:8px; border-radius:50%; background:#555;"></div>
+            <button onclick="toggleApi()" style="background:none; border:none; font-size:22px;">🔑</button>
         </div>
     </header>
 
-    <div id="api-panel">
-        <label>Google AI Key</label>
-        <input type="password" id="api-key-input" value="AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY">
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button class="btn btn-small" onclick="testApiKey()">Testar Conexão</button>
-            <button class="btn btn-small btn-outline" onclick="toggleApiPanel()">Fechar</button>
-        </div>
+    <div id="api-config">
+        <h4 style="margin-top:0">Configurações de API</h4>
+        <input type="password" id="api-key" value="AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY" placeholder="Sua Gemini Key">
+        <button class="btn" onclick="testKey()">Salvar e Testar</button>
+        <button onclick="toggleApi()" style="background:none; border:none; color:var(--accent); width:100%; margin-top:15px;">Fechar</button>
     </div>
 
-    <div id="view-capture" class="view active">
+    <div id="view-capture">
+        <img id="photo-preview">
+        
         <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn" onclick="capturePhoto('camera')">📸 Câmera</button>
-                <button class="btn btn-outline" onclick="capturePhoto('gallery')">📁 Galeria</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <button class="btn" onclick="openCam('camera')">📸 Foto</button>
+                <button class="btn" style="background:#1f1f2e; color:#fff" onclick="openCam('file')">📁 Galeria</button>
             </div>
-            <input type="file" id="file-input" hidden accept="image/*">
-            <img id="photo-preview" alt="Preview">
+            <input type="file" id="input-file" hidden accept="image/*">
         </div>
 
         <div class="card">
-            <button class="btn btn-outline btn-small" onclick="getLocation()">📍 Usar localização atual</button>
-            
-            <label>Loja/PDV</label>
-            <input type="text" id="field-store" placeholder="Nome do mercado">
-            
-            <label>Cidade</label>
-            <input type="text" id="field-city" placeholder="Manaus, AM">
-
-            <label>Canal</label>
-            <select id="field-channel">
-                <option value="Atacarejo">Atacarejo</option>
-                <option value="Supermercado">Supermercado</option>
-                <option value="Farmácia">Farmácia</option>
-                <option value="Distribuidor">Distribuidor</option>
-                <option value="Outro">Outro</option>
+            <button onclick="geo()" style="background:none; border:none; color:var(--accent); margin-bottom:15px; font-weight:bold;">📍 Obter Localização Atual</button>
+            <input type="text" id="store" placeholder="Nome da Loja">
+            <input type="text" id="city" placeholder="Cidade">
+            <select id="channel">
+                <option>Atacarejo</option>
+                <option>Supermercado</option>
+                <option>Farmácia</option>
             </select>
         </div>
 
-        <div class="loading-container" id="loading-ai">
-            <div style="text-align:center; font-size:12px; margin-bottom:8px;">Gemini analisando gôndola...</div>
-            <div class="loading-bar"><div class="loading-progress"></div></div>
+        <div class="loading-zone" id="loader">
+            <small id="loader-msg">Conectando ao Gemini...</small>
+            <div class="bar-bg"><div class="bar-fill"></div></div>
         </div>
 
-        <div id="results-area"></div>
+        <div id="result-list"></div>
 
-        <button class="btn" id="btn-analyze" style="margin-top:20px; display:none;" onclick="analyzeImage()">Analisar Preços</button>
-        <button class="btn" id="btn-save" style="margin-top:20px; display:none;" onclick="saveRecord()">Salvar Registro</button>
-    </div>
-
-    <div id="view-dashboard" class="view">
-        <div class="stats-grid">
-            <div class="stat-card"><span class="stat-val" id="stat-total">0</span><span class="stat-label">Registros</span></div>
-            <div class="stat-card"><span class="stat-val" id="stat-stores">0</span><span class="stat-label">Lojas</span></div>
-            <div class="stat-card"><span class="stat-val" id="stat-prods">0</span><span class="stat-label">Produtos</span></div>
-            <div class="stat-card"><span class="stat-val" style="font-size:14px" id="stat-last">-</span><span class="stat-label">Última Visita</span></div>
-        </div>
-
-        <h3 style="margin-top:25px;">Preço Médio por Marca</h3>
-        <div id="brand-bars" class="card"></div>
-    </div>
-
-    <div id="view-history" class="view">
-        <div style="display:flex; justify-content: space-between; align-items:center;">
-            <h3>Meus Registros</h3>
-            <button class="btn btn-small btn-outline" style="width:auto;" onclick="exportCSV()">Exportar CSV</button>
-        </div>
-        <div id="history-list"></div>
+        <button class="btn" id="btn-run" style="display:none; margin-top:20px;" onclick="runAI()">Analisar Gôndola</button>
+        <button class="btn" id="btn-save" style="display:none; margin-top:15px; background:var(--brand-pantene)" onclick="save()">Salvar no Histórico</button>
     </div>
 
     <nav>
-        <button class="nav-item active" onclick="switchTab('capture', this)">
-            <span class="nav-icon">📷</span><span>Capturar</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('dashboard', this)">
-            <span class="nav-icon">📊</span><span>Dashboard</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('history', this)">
-            <span class="nav-icon">📜</span><span>Histórico</span>
-        </button>
+        <a href="#" class="nav-item active"><span>📷</span>Capturar</a>
+        <a href="#" class="nav-item"><span>📊</span>Dash</a>
+        <a href="#" class="nav-item"><span>📜</span>Histórico</a>
     </nav>
 
     <script>
-        // CONFIGURAÇÕES E ESTADO
-        const BRAND_COLORS = {
-            'Dabelle': '#e91e8c', 'Salon Line': '#ff6b35', 'Elseve': '#3b82f6',
-            'OX': '#8b5cf6', "L'Oréal": '#f59e0b', 'Dove': '#06b6d4', 'Pantene': '#10b981'
-        };
-        const MODELS = ['gemini-2.0-flash-exp', 'gemini-2.0-flash', 'gemini-2.0-flash-001', 'gemini-2.0-flash-lite', 'gemini-flash-latest'];
-        
-        let currentPhoto = null;
-        let identifiedProducts = [];
-        let db = JSON.parse(localStorage.getItem('pricescout_records') || '[]');
+        let currentImg = null;
+        let lastProducts = [];
+        const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
 
-        // INICIALIZAÇÃO
-        document.addEventListener('DOMContentLoaded', () => {
-            updateStats();
-            updateCounter();
-        });
-
-        function switchTab(viewId, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`view-${viewId}`).classList.add('active');
-            el.classList.add('active');
-            if(viewId === 'dashboard') renderDashboard();
-            if(viewId === 'history') renderHistory();
+        function toggleApi() {
+            const el = document.getElementById('api-config');
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
         }
 
-        // CAPTURA E LOCALIZAÇÃO
-        function capturePhoto(type) {
-            const input = document.getElementById('file-input');
-            if(type === 'camera') input.setAttribute('capture', 'environment');
+        function openCam(mode) {
+            const input = document.getElementById('input-file');
+            if(mode === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
 
-        document.getElementById('file-input').addEventListener('change', function(e) {
+        document.getElementById('input-file').onchange = async (e) => {
             const file = e.target.files[0];
-            if (!file) return;
-
-            // Preview
+            if(!file) return;
+            
             const reader = new FileReader();
-            reader.onload = (event) => {
-                currentPhoto = event.target.result;
-                const img = document.getElementById('photo-preview');
-                img.src = currentPhoto;
-                img.style.display = 'block';
-                document.getElementById('btn-analyze').style.display = 'flex';
+            reader.onload = (ev) => {
+                currentImg = ev.target.result;
+                const p = document.getElementById('photo-preview');
+                p.src = currentImg;
+                p.style.display = 'block';
+                document.getElementById('btn-run').style.display = 'flex';
+                document.getElementById('result-list').innerHTML = '';
             };
             reader.readAsDataURL(file);
+        };
 
-            // Tenta ler EXIF
-            EXIF.getData(file, function() {
-                const lat = EXIF.getTag(this, "GPSLatitude");
-                const lon = EXIF.getTag(this, "GPSLongitude");
-                if(lat && lon) {
-                    const latDec = lat[0] + lat[1]/60 + lat[2]/3600;
-                    const lonDec = lon[0] + lon[1]/60 + lon[2]/3600;
-                    reverseGeocode(latDec, -lonDec); // Simplificado para hemisfério oeste
-                }
-            });
-        });
+        async function runAI() {
+            const key = document.getElementById('api-key').value;
+            const loader = document.getElementById('loader');
+            const btn = document.getElementById('btn-run');
+            
+            loader.style.display = 'block';
+            btn.disabled = true;
 
-        async function getLocation() {
-            if (!navigator.geolocation) return alert("GPS não suportado");
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                reverseGeocode(pos.coords.latitude, pos.coords.longitude);
-            });
-        }
-
-        async function reverseGeocode(lat, lon) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                const data = await res.json();
-                const city = data.address.city || data.address.town || "";
-                const neighborhood = data.address.suburb || "";
-                document.getElementById('field-city').value = `${city}, ${data.address.state || ''}`;
-                if(!document.getElementById('field-store').value) {
-                    document.getElementById('field-store').value = neighborhood;
-                }
-            } catch (e) { console.error("Geocode error", e); }
-        }
-
-        // INTEGRAÇÃO GEMINI AI
-        async function analyzeImage() {
-            const apiKey = document.getElementById('api-key-input').value;
-            if(!apiKey) return alert("Insira a API Key no ícone da chave 🔑");
-
-            document.getElementById('loading-ai').style.display = 'block';
-            document.getElementById('btn-analyze').disabled = true;
-
-            const base64Data = currentPhoto.split(',')[1];
-            const prompt = `Analise a imagem de gôndola e retorne APENAS JSON válido sem markdown com esta estrutura: {"produtos":[{"marca":"","linha":"","tipo":"","preco":0.00,"promocao":false}]}. Extraia todos os produtos com etiqueta de preço visível. Marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene. Linhas: Mel, SOS Crescimento, Cereja, Abacate, Cachos, Brilho, Cronograma Perfeito. Tipos: Shampoo, Condicionador, Creme, Kit, Máscara, Óleo.`;
+            // Compressão básica para evitar erro de payload
+            const base64Clean = currentImg.split(',')[1];
+            
+            const prompt = `Retorne APENAS um JSON: {"produtos":[{"marca":"","linha":"","tipo":"","preco":0.00,"promocao":false}]}. Marcas foco: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene. Se não encontrar nada, retorne lista vazia.`;
 
             let success = false;
-            for (let model of MODELS) {
+            for(let m of MODELS) {
                 try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                    const response = await fetch(url, {
+                    document.getElementById('loader-msg').innerText = `Tentando modelo ${m}...`;
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`, {
                         method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Data } }] }],
-                            generationConfig: { maxOutputTokens: 8192, temperature: 0.1 }
+                            contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: base64Clean}}]}]
                         })
                     });
-
-                    const data = await response.json();
-                    let text = data.candidates[0].content.parts[0].text;
-                    // Limpeza de possível markdown do Gemini
-                    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                     
-                    const result = JSON.parse(text);
-                    identifiedProducts = result.produtos;
-                    renderIdentified();
+                    const data = await res.json();
+                    let raw = data.candidates[0].content.parts[0].text;
+                    // Limpeza radical de JSON
+                    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+                    if(!jsonMatch) throw new Error("JSON não encontrado");
+                    
+                    const parsed = JSON.parse(jsonMatch[0]);
+                    lastProducts = parsed.produtos;
+                    render(lastProducts);
                     success = true;
                     break;
-                } catch (e) {
-                    console.log(`Falha no modelo ${model}, tentando próximo...`);
-                }
+                } catch(err) { console.error("Falha no modelo", m); }
             }
 
-            document.getElementById('loading-ai').style.display = 'none';
-            document.getElementById('btn-analyze').disabled = false;
-            if(!success) alert("Erro ao processar imagem. Verifique sua chave ou conexão.");
+            loader.style.display = 'none';
+            btn.disabled = false;
+            if(!success) alert("Falha na análise. Verifique a chave ou iluminação da foto.");
         }
 
-        function renderIdentified() {
-            const area = document.getElementById('results-area');
-            area.innerHTML = '<h4 style="margin:15px 0 10px 0">Produtos Encontrados:</h4>';
-            
-            identifiedProducts.forEach((p, idx) => {
-                const color = BRAND_COLORS[p.marca] || '#ffffff';
-                const div = document.createElement('div');
-                div.className = 'product-card';
-                div.style.borderLeftColor = color;
-                div.innerHTML = `
-                    <div>
-                        <strong style="color:${color}">${p.marca}</strong> <span style="font-size:12px">${p.linha} ${p.tipo}</span>
-                    </div>
-                    <div style="text-align:right">
-                        ${p.promocao ? '<span class="badge-promo">PROMO</span>' : ''}
-                        <div style="font-weight:bold">R$ ${p.preco.toFixed(2)}</div>
+        function render(prods) {
+            const div = document.getElementById('result-list');
+            div.innerHTML = `<h3 style="margin:20px 0 10px 0">Produtos (${prods.length})</h3>`;
+            prods.forEach(p => {
+                const color = BRAND_COLORS[p.marca] || '#555';
+                div.innerHTML += `
+                    <div style="background:#1f1f2e; padding:12px; border-radius:10px; margin-bottom:8px; border-left:4px solid ${color}; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:bold; color:${color}">${p.marca}</div>
+                            <div style="font-size:12px; color:#aaa">${p.linha} ${p.tipo}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-size:18px; font-weight:bold">R$ ${p.preco.toFixed(2)}</div>
+                            ${p.promocao ? '<span style="background:red; font-size:9px; padding:2px 5px; border-radius:4px;">PROMO</span>' : ''}
+                        </div>
                     </div>
                 `;
-                area.appendChild(div);
             });
             document.getElementById('btn-save').style.display = 'flex';
+            document.getElementById('btn-run').style.display = 'none';
         }
 
-        // STORAGE E DADOS
-        function saveRecord() {
+        const BRAND_COLORS = { 'Dabelle': '#e91e8c', 'Salon Line': '#ff6b35', 'Elseve': '#3b82f6', 'OX': '#8b5cf6', "L'Oréal": '#f59e0b', 'Dove': '#06b6d4', 'Pantene': '#10b981' };
+
+        function save() {
             const record = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('pt-BR'),
-                dateISO: new Date().toISOString(),
-                store: document.getElementById('field-store').value || "Não informado",
-                city: document.getElementById('field-city').value,
-                channel: document.getElementById('field-channel').value,
-                products: identifiedProducts
+                ts: Date.now(),
+                store: document.getElementById('store').value,
+                city: document.getElementById('city').value,
+                prods: lastProducts
             };
-
+            let db = JSON.parse(localStorage.getItem('ps_records') || '[]');
             db.unshift(record);
-            localStorage.setItem('pricescout_records', JSON.stringify(db));
-            
-            alert("Registro salvo com sucesso!");
-            resetForm();
-            updateCounter();
-            switchTab('history', document.querySelectorAll('.nav-item')[2]);
+            localStorage.setItem('ps_records', JSON.stringify(db));
+            alert("Salvo com sucesso!");
+            location.reload();
         }
 
-        function resetForm() {
-            currentPhoto = null;
-            identifiedProducts = [];
-            document.getElementById('photo-preview').style.display = 'none';
-            document.getElementById('results-area').innerHTML = '';
-            document.getElementById('btn-save').style.display = 'none';
-            document.getElementById('btn-analyze').style.display = 'none';
-            document.getElementById('field-store').value = '';
-        }
-
-        // DASHBOARD LOGIC
-        function renderDashboard() {
-            updateStats();
-            const brandBars = document.getElementById('brand-bars');
-            brandBars.innerHTML = '';
-
-            // Calcular médias
-            const brandData = {};
-            db.forEach(rec => {
-                rec.products.forEach(p => {
-                    if(!brandData[p.marca]) brandData[p.marca] = { sum: 0, count: 0 };
-                    brandData[p.marca].sum += p.preco;
-                    brandData[p.marca].count++;
-                });
+        async function geo() {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                const data = await res.json();
+                document.getElementById('city').value = data.address.city || data.address.town || "Manaus";
+                document.getElementById('store').value = data.address.suburb || "";
             });
-
-            const maxPrice = Math.max(...Object.values(brandData).map(b => b.sum/b.count)) || 1;
-
-            Object.keys(brandData).forEach(brand => {
-                const avg = brandData[brand].sum / brandData[brand].count;
-                const width = (avg / maxPrice) * 100;
-                const color = BRAND_COLORS[brand] || '#ddd';
-
-                brandBars.innerHTML += `
-                    <div style="margin-bottom:15px">
-                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px">
-                            <span>${brand}</span>
-                            <strong>R$ ${avg.toFixed(2)}</strong>
-                        </div>
-                        <div class="price-bar-bg">
-                            <div class="price-bar-fill" style="width:${width}%; background:${color}"></div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function updateStats() {
-            document.getElementById('stat-total').innerText = db.length;
-            document.getElementById('stat-stores').innerText = new Set(db.map(r => r.store)).size;
-            document.getElementById('stat-prods').innerText = db.reduce((acc, curr) => acc + curr.products.length, 0);
-            document.getElementById('stat-last').innerText = db[0] ? db[0].date : '-';
-        }
-
-        function updateCounter() {
-            document.getElementById('reg-count').innerText = `${db.length} registros`;
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('history-list');
-            container.innerHTML = '';
-            
-            db.forEach(rec => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #1f1f2e; padding-bottom:8px; margin-bottom:10px">
-                        <span style="font-size:12px; font-weight:bold">${rec.store}</span>
-                        <span style="font-size:10px; color:var(--text-dim)">${rec.date}</span>
-                    </div>
-                    ${rec.products.map(p => `
-                        <div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:4px">
-                            <span>${p.marca} ${p.tipo}</span>
-                            <span>R$ ${p.preco.toFixed(2)}</span>
-                        </div>
-                    `).join('')}
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // UTILS
-        function toggleApiPanel() {
-            const p = document.getElementById('api-panel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
-        }
-
-        async function testApiKey() {
-            const btn = event.target;
-            btn.innerText = "Testando...";
-            const apiKey = document.getElementById('api-key-input').value;
-            
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "Oi" }] }] })
-                });
-                if(res.ok) {
-                    document.getElementById('key-status').innerText = "✅";
-                    setTimeout(toggleApiPanel, 1000);
-                } else {
-                    alert("Chave inválida");
-                }
-            } catch(e) { alert("Erro de conexão"); }
-            btn.innerText = "Testar Conexão";
-        }
-
-        function exportCSV() {
-            let csv = "ID;Data;Loja;Cidade;Canal;Marca;Linha;Tipo;Preco;Promocao\n";
-            db.forEach(r => {
-                r.products.forEach(p => {
-                    csv += `${r.id};${r.date};${r.store};${r.city};${r.channel};${p.marca};${p.linha};${p.tipo};${p.preco};${p.promocao}\n`;
-                });
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `pricescout_export_${Date.now()}.csv`);
-            a.click();
         }
     </script>
 </body>
