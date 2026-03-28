@@ -607,7 +607,7 @@
 <div class="app">
 
   <div class="header">
-    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.0</span></div>
+    <div class="logo">Price<span>Scout</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">v2.1</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div id="apiIndicator" onclick="toggleApiPanel()" style="cursor:pointer;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:700;color:var(--muted);font-family:'SF Mono','Courier New',monospace;">
         🔑 KEY
@@ -628,7 +628,7 @@
         Testar
       </button>
     </div>
-    <div class="api-key-note" style="margin-top:6px;">Gratuito · <b>aistudio.google.com</b> → Get API Key</div>
+    <div class="api-key-note" style="margin-top:6px;">Gratuito · <b>aistudio.google.com</b> → Get API Key · <span onclick="listModels()" style="color:var(--accent);cursor:pointer;text-decoration:underline;">ver modelos disponíveis</span></div>
   </div>
 
   <!-- BANNER INSTALAR PWA (só aparece no Safari fora do modo standalone) -->
@@ -881,11 +881,37 @@ function updateApiIndicator(hasKey) {
 const GEMINI_MODELS = [
   'gemini-2.5-flash-preview-05-20',
   'gemini-2.5-flash',
+  'gemini-2.5-pro',
   'gemini-2.0-flash-exp',
   'gemini-2.0-flash-lite',
-  'gemini-1.5-flash-latest'
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro-latest'
 ];
 let activeModel = localStorage.getItem('pricescout_model') || GEMINI_MODELS[0];
+
+async function listModels() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { showToast('⚠️ Cole a API Key primeiro', '#f59e0b'); return; }
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    if (data.error) { showToast('❌ ' + data.error.message, '#ef4444'); return; }
+    const names = (data.models || [])
+      .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+      .map(m => m.name.replace('models/', ''));
+    if (names.length) {
+      activeModel = names[0];
+      localStorage.setItem('pricescout_model', activeModel);
+      alert('Modelos disponíveis:\n' + names.join('\n') + '\n\nUsando: ' + activeModel);
+    } else {
+      alert('Nenhum modelo encontrado para esta key.');
+    }
+  } catch(e) {
+    showToast('❌ Erro ao listar modelos', '#ef4444');
+  }
+}
+
 
 async function testApiKey() {
   const apiKey = document.getElementById('apiKey').value.trim();
@@ -925,6 +951,27 @@ async function testApiKey() {
         setTimeout(() => { document.getElementById('apiPanel').style.display = 'none'; }, 2000);
         found = true;
         break;
+      }
+    } catch(e) {}
+  }
+
+  // Se nenhum modelo da lista funcionou, tenta listar os disponíveis
+  if (!found) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const data = await res.json();
+      const names = (data.models || [])
+        .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+        .map(m => m.name.replace('models/', ''));
+      if (names.length) {
+        activeModel = names[0];
+        localStorage.setItem('pricescout_model', activeModel);
+        status.textContent = `✅ ${activeModel}`;
+        status.style.color = 'var(--success)';
+        updateApiIndicator(true);
+        showToast(`✅ Modelo encontrado: ${activeModel}`, '#22c55e');
+        setTimeout(() => { document.getElementById('apiPanel').style.display = 'none'; }, 2000);
+        found = true;
       }
     } catch(e) {}
   }
