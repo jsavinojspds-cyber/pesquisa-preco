@@ -3,210 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceScout v4.4 Ultra</title>
+    <title>PriceHair 3 v1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .accent-cyan { color: #00e5ff; }
-        .bg-cyan { background-color: #00e5ff; }
-        .card { background: #16161e; border: 1px solid #27272a; border-radius: 12px; }
-        .loader { border-top-color: #00e5ff; animation: spinner 0.6s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; }
-        input:focus { outline: none; border-color: #00e5ff; }
+        :root {
+            --neon-cyan: #00e5ff;
+            --dark-bg: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        body { 
+            background-color: var(--dark-bg); 
+            color: #f1f1f1; 
+            font-family: -apple-system, system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tabela Estilizada */
+        .price-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .price-tag {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .nav-btn.active { color: var(--neon-cyan); }
+        .nav-btn.active svg { filter: drop-shadow(0 0 5px var(--neon-cyan)); }
     </style>
 </head>
-<body class="p-4 pb-20">
+<body class="pb-24">
 
-    <header class="mb-6">
-        <div class="flex justify-center items-center gap-2 mb-4">
-            <h1 class="text-2xl font-bold accent-cyan">PriceScout</h1>
-            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.4 ULTRA</span>
-        </div>
-        
-        <div class="card p-4">
-            <div class="flex justify-between items-center mb-2 text-[10px] uppercase font-black tracking-tighter text-gray-500">
-                <span>Gemini API Key</span>
-                <div id="apiStatus" class="flex items-center gap-2">
-                    <span id="statusDot" class="status-dot bg-gray-700"></span>
-                    <span id="statusText">Aguardando</span>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <input type="password" id="apiKey" placeholder="Cole sua chave..." 
-                    class="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-cyan-400 text-sm appearance-none">
-                <button onclick="checkApi()" class="bg-cyan text-black px-4 rounded-lg text-[10px] font-black uppercase active:scale-95 transition-transform">
-                    Verificar
-                </button>
-            </div>
-        </div>
+    <header class="p-6 text-center border-b border-white/5 bg-black/20 backdrop-blur-md sticky top-0 z-40">
+        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair 3</h1>
+        <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-bold">Auditoria v1.0</p>
     </header>
 
-    <main class="space-y-4">
-        <div class="card p-6 text-center border-dashed border-2 border-gray-800 active:border-cyan transition-colors">
-            <input type="file" id="cameraInput" accept="image/*" class="hidden">
-            <button onclick="document.getElementById('cameraInput').click()" 
-                class="w-full bg-white text-black font-black py-4 rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
-                <span class="text-lg">📷 SELECIONAR FOTO</span>
-                <span class="text-[10px] opacity-60 uppercase">Câmera ou Galeria</span>
-            </button>
-            <p id="fileName" class="text-[10px] text-gray-500 mt-3 italic truncate px-4"></p>
-        </div>
+    <div class="p-4">
+        
+        <section id="tab-scanner" class="tab-content active-tab space-y-4">
+            <div class="glass-card p-4">
+                <label class="text-[10px] uppercase font-black text-gray-500 mb-2 block">Ponto de Venda</label>
+                <input type="text" id="storeName" placeholder="Digite o nome da loja..." 
+                    class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-[#00e5ff]">
+            </div>
 
-        <button id="analyzeBtn" disabled onclick="analyzeImage()" 
-            class="w-full bg-gray-800 text-gray-500 font-black py-5 rounded-xl opacity-50 cursor-not-allowed transition-all uppercase tracking-widest shadow-lg">
-            Analisar Preços
-        </button>
-
-        <div id="loading" class="hidden flex flex-col items-center py-10">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-800 h-10 w-10 mb-4"></div>
-            <p class="accent-cyan animate-pulse text-xs font-black uppercase tracking-widest text-center">
-                Analisando gôndola...<br><span class="text-[10px] opacity-60">Otimizado para 4G Manaus</span>
-            </p>
-        </div>
-
-        <div id="resultsContainer" class="hidden space-y-4">
-            <div class="flex justify-between items-center px-1">
-                <h2 class="text-[10px] font-black uppercase tracking-tighter text-gray-500 text-xs">Itens Extraídos</h2>
-                <button onclick="copyToWhatsApp()" class="text-[10px] bg-green-600 text-white px-5 py-2 rounded-full font-black uppercase">
-                    WhatsApp
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="document.getElementById('cameraInput').click()" 
+                    class="bg-white text-black font-black py-6 rounded-2xl flex flex-col items-center gap-2 shadow-xl active:scale-95 transition-all">
+                    <span class="text-2xl">📷</span>
+                    <span class="text-[10px] uppercase">Câmera</span>
+                </button>
+                <button onclick="document.getElementById('galleryInput').click()" 
+                    class="bg-white/5 text-white font-black py-6 rounded-2xl flex flex-col items-center gap-2 border border-white/10 active:scale-95 transition-all">
+                    <span class="text-2xl">📁</span>
+                    <span class="text-[10px] uppercase">Galeria</span>
                 </button>
             </div>
-            <div id="resultsList" class="card divide-y divide-gray-800 overflow-hidden"></div>
-        </div>
-    </main>
+            
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processFile(this)">
+            <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="processFile(this)">
+
+            <button id="analyzeBtn" disabled onclick="startAnalysis()" 
+                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 transition-all">
+                Analisar Gôndola
+            </button>
+
+            <div id="resultsContainer" class="hidden space-y-4 pt-4">
+                <div class="flex justify-between items-end px-2">
+                    <div>
+                        <h2 class="text-xs font-black uppercase text-gray-500">Itens Coletados</h2>
+                        <p id="locDisplay" class="text-[10px] text-[#00e5ff] font-bold"></p>
+                    </div>
+                    <button onclick="sendWhatsApp()" class="bg-[#25D366] text-black text-[10px] font-black px-4 py-2 rounded-full uppercase">Enviar Relatório</button>
+                </div>
+                
+                <div id="resultsList" class="glass-card overflow-hidden">
+                    <div class="price-row">
+                        <div class="text-xs font-bold text-gray-300">Dabelle Hair Love 400ml</div>
+                        <div class="price-tag text-sm">R$ 18,90</div>
+                    </div>
+                    <div class="price-row">
+                        <div class="text-xs font-bold text-gray-300">Elseve Liso dos Sonhos</div>
+                        <div class="price-tag text-sm">R$ 22,50</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-config" class="tab-content space-y-4">
+            <h2 class="text-sm font-black uppercase text-gray-400 px-2">Configurações</h2>
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold">Status da Chave</span>
+                    <div id="statusDot" class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_red]"></div>
+                </div>
+                <input type="password" id="apiKey" placeholder="Cole sua Gemini API Key" 
+                    class="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-sm text-cyan-400 mb-4 outline-none">
+                <button onclick="validateKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-xs">Validar Acesso</button>
+            </div>
+            <div class="p-4 text-[10px] text-gray-600 leading-relaxed">
+                A chave API fica salva apenas neste navegador. Em caso de erro "Quota Exceeded", aguarde alguns minutos antes de analisar novamente.
+            </div>
+        </section>
+
+    </div>
+
+    <nav class="fixed bottom-0 inset-x-0 bg-black/60 backdrop-blur-xl border-t border-white/10 flex justify-around p-3 z-50">
+        <button onclick="switchTab('scanner')" id="nav-scanner" class="nav-btn active flex flex-col items-center gap-1 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+            <span class="text-[9px] font-black uppercase">Scanner</span>
+        </button>
+        <button onclick="switchTab('config')" id="nav-config" class="nav-btn flex flex-col items-center gap-1 text-gray-600 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            <span class="text-[9px] font-black uppercase">Ajustes</span>
+        </button>
+    </nav>
+
+    <div id="loading" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-10">
+        <div class="w-12 h-12 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-[#00e5ff] font-black italic animate-pulse uppercase text-xs tracking-widest">Auditoria em Andamento</p>
+    </div>
 
     <canvas id="canvas" class="hidden"></canvas>
 
     <script>
-        let compressedImageBase64 = null;
-        let isApiValid = false;
+        let base64Img = null;
+        let apiValid = false;
+        let cityState = "Manaus, AM";
 
-        // Versão 4.4: Corrigido o endpoint para evitar o erro "not found"
-        async function checkApi() {
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'text-[#00e5ff]'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active-tab');
+            document.getElementById(`nav-${tab}`).classList.add('active', 'text-[#00e5ff]');
+        }
+
+        async function validateKey() {
             const key = document.getElementById('apiKey').value.trim();
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            if (!key) return;
-            text.innerText = "Testando...";
-            
+            if(!key) return;
             try {
-                // Usando o endpoint genérico de listagem para validar a chave sem erro de modelo
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-                const data = await res.json();
-
-                if (res.ok) {
-                    isApiValid = true;
-                    dot.className = "status-dot bg-green-500 shadow-[0_0_10px_#00e5ff]";
-                    text.innerText = "Chave Ativa";
-                    text.style.color = "#00e5ff";
-                    updateAnalyzeButton();
-                } else {
-                    throw new Error(data.error?.message || "Chave Inválida");
-                }
-            } catch (e) {
-                isApiValid = false;
-                dot.className = "status-dot bg-red-500 shadow-[0_0_10px_#ef4444]";
-                text.innerText = "Erro";
-                text.style.color = "#ef4444";
-                alert("Erro: " + e.message);
-            }
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${key}`);
+                if(res.ok) {
+                    apiValid = true;
+                    document.getElementById('statusDot').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
+                    alert("Acesso Liberado!");
+                    switchTab('scanner');
+                    updateBtn();
+                } else { throw new Error(); }
+            } catch(e) { alert("Chave Inválida."); }
         }
 
-        function updateAnalyzeButton() {
-            const btn = document.getElementById('analyzeBtn');
-            if (isApiValid && compressedImageBase64) {
-                btn.disabled = false;
-                btn.className = "w-full bg-[#00e5ff] text-black font-black py-5 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,229,255,0.3)] uppercase tracking-widest";
-                btn.style.opacity = "1";
-            }
-        }
-
-        document.getElementById('cameraInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            document.getElementById('fileName').innerText = "FOTO CARREGADA";
+        function processFile(input) {
+            const file = input.files[0];
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.getElementById('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const max_size = 1000;
-
-                    if (width > height && width > max_size) { height *= max_size / width; width = max_size; }
-                    else if (height > max_size) { width *= max_size / height; height = max_size; }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    compressedImageBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-                    updateAnalyzeButton();
+                    let w = img.width, h = img.height, max = 1200;
+                    if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    base64Img = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                    updateBtn();
                 };
-                img.src = event.target.result;
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        });
+        }
 
-        async function analyzeImage() {
-            const key = document.getElementById('apiKey').value.trim();
-            const loading = document.getElementById('loading');
-            const resultsContainer = document.getElementById('resultsContainer');
-            
-            loading.classList.remove('hidden');
-            resultsContainer.classList.add('hidden');
-            document.getElementById('analyzeBtn').disabled = true;
-
-            // Endpoint corrigido para a v1beta
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: "Aja como um scanner de preços. Extraia: Marca, Item e Preço: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato: [Marca] [Item] - R$ [Preço]. Ignore promoções ou kits." },
-                        { inline_data: { mime_type: "image/jpeg", data: compressedImageBase64 } }
-                    ]
-                }],
-                safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                ],
-                generationConfig: { temperature: 0.1 }
-            };
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-                if(!data.candidates) throw new Error(data.error?.message || "Erro na análise.");
-                
-                const text = data.candidates[0].content.parts[0].text;
-                const list = document.getElementById('resultsList');
-                list.innerHTML = text.trim().split('\n').map(line => `
-                    <div class="p-4 text-xs font-bold border-b border-gray-800 last:border-0 hover:bg-gray-800/30">${line}</div>
-                `).join('');
-
-                resultsContainer.classList.remove('hidden');
-            } catch (error) {
-                alert('Erro: ' + error.message);
-            } finally {
-                loading.classList.add('hidden');
-                document.getElementById('analyzeBtn').disabled = false;
+        function updateBtn() {
+            const btn = document.getElementById('analyzeBtn');
+            const store = document.getElementById('storeName').value.trim();
+            if(apiValid && base64Img && store.length > 2) {
+                btn.disabled = false;
+                btn.className = "w-full py-5 rounded-2xl bg-[#00e5ff] text-black font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(0,229,255,0.3)]";
             }
         }
 
-        function copyToWhatsApp() {
-            const items = Array.from(document.querySelectorAll('#resultsList div')).map(d => d.innerText).join('\n');
-            window.open(`https://wa.me/?text=${encodeURIComponent("*PRICESCOUT v4.4*\n\n" + items)}`, '_blank');
+        document.getElementById('storeName').addEventListener('input', updateBtn);
+
+        async function startAnalysis() {
+            document.getElementById('loading').classList.remove('hidden');
+            
+            // Get Location
+            try {
+                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000}));
+                const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                const data = await geo.json();
+                cityState = `${data.address.city || data.address.town || 'Manaus'}, ${data.address.state || 'AM'}`;
+            } catch(e) { console.log("GPS off"); }
+
+            const key = document.getElementById('apiKey').value.trim();
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            
+            const payload = {
+                contents: [{ parts: [
+                    { text: "Aja como auditor. Extraia Marca, Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato rigoroso: Marca Item|Preço. Use | para separar o preço." },
+                    { inline_data: { mime_type: "image/jpeg", data: base64Img } }
+                ]}]
+            };
+
+            try {
+                const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                const text = data.candidates[0].content.parts[0].text;
+                
+                const list = document.getElementById('resultsList');
+                list.innerHTML = text.trim().split('\n').map(line => {
+                    const parts = line.split('|');
+                    return `
+                        <div class="price-row">
+                            <div class="text-xs font-bold text-gray-300">${parts[0] || 'Item'}</div>
+                            <div class="price-tag text-xs">${parts[1] || '---'}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('locDisplay').innerText = `📍 ${cityState}`;
+                document.getElementById('resultsContainer').classList.remove('hidden');
+            } catch(e) { alert("Erro na análise."); }
+            finally { document.getElementById('loading').classList.add('hidden'); }
+        }
+
+        function sendWhatsApp() {
+            const store = document.getElementById('storeName').value.toUpperCase();
+            const items = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
+            const text = `*PRICEHAIR 3*\n🏪 *LOJA:* ${store}\n📍 *LOCAL:* ${cityState}\n\n${items}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
         }
     </script>
 </body>
