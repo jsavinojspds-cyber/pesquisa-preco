@@ -3,261 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceHair v1.1</title>
+    <title>PriceHair 3 v1.2 Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --neon-cyan: #00e5ff;
-            --dark-bg: #07070a;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
-        body { 
-            background-color: var(--dark-bg); 
-            color: #f1f1f1; 
-            font-family: -apple-system, system-ui, sans-serif;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-        }
-        .tab-content { display: none; animation: slideUp 0.3s ease-out; }
-        .active-tab { display: block; }
+        :root { --cyan: #00e5ff; --bg: #050508; --glass: rgba(255, 255, 255, 0.03); }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        .glass { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
+        .tab-content { display: none; }
+        .active-tab { display: block; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Tabela de Preços v1.1 */
-        .price-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .price-tag {
-            font-family: 'SF Mono', 'Roboto Mono', monospace;
-            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(0, 229, 255, 0.05));
-            color: var(--neon-cyan);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 800;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-        .nav-btn.active { color: var(--neon-cyan); }
+        .price-row { display: grid; grid-template-columns: 1fr auto; padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .price-tag { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: var(--cyan); background: rgba(0, 229, 255, 0.1); padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .nav-btn.active { color: var(--cyan); }
+        .nav-btn.active svg { filter: drop-shadow(0 0 5px var(--cyan)); }
+        #previewArea { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 2px dashed rgba(255,255,255,0.1); }
+        #previewArea.loaded { border: 2px solid var(--cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); background: rgba(0, 229, 255, 0.02); }
     </style>
 </head>
-<body class="pb-28">
+<body class="overflow-hidden">
 
-    <header class="p-5 text-center bg-black/40 backdrop-blur-xl sticky top-0 z-40 border-b border-white/5">
-        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair</h1>
-        <div class="flex items-center justify-center gap-2">
-            <span class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-bold">Auditoria Profissional</span>
-            <span class="text-[8px] border border-white/20 px-1.5 rounded text-white/40">v1.1</span>
+    <header class="p-5 text-center border-b border-white/5 bg-black/40 backdrop-blur-md">
+        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair 3</h1>
+        <div class="flex justify-center mt-1">
+            <span class="text-[9px] bg-white/10 px-3 py-0.5 rounded-full uppercase tracking-[0.3em] font-black text-gray-400">v1.2 ULTRA</span>
         </div>
     </header>
 
-    <div class="p-4 max-w-md mx-auto">
+    <main class="flex-1 overflow-y-auto p-4 space-y-4">
         
         <section id="tab-scanner" class="tab-content active-tab space-y-4">
-            <div class="glass-card p-4 shadow-2xl">
-                <label class="text-[10px] uppercase font-black text-gray-500 mb-2 block tracking-widest">Identificação da Loja</label>
-                <input type="text" id="storeName" placeholder="Nome do Mercado ou Farmácia..." 
-                    class="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-[#00e5ff] transition-all">
+            
+            <div class="glass p-4">
+                <label class="text-[10px] uppercase font-black text-gray-500 mb-1 block tracking-widest">Ponto de Venda</label>
+                <input type="text" id="storeName" placeholder="Ex: Supermercado DB" 
+                    class="w-full bg-transparent border-b border-white/10 p-2 text-sm outline-none focus:border-[#00e5ff] transition-all">
+            </div>
+
+            <div id="previewArea" class="glass min-h-[140px] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                <img id="imgPreview" class="hidden max-h-48 rounded-xl shadow-2xl z-10" src="">
+                <div id="uploadStatus" class="z-10 text-center">
+                    <span class="text-4xl opacity-10">📷</span>
+                    <p class="text-[10px] text-gray-600 font-black uppercase mt-3 tracking-widest">Nenhuma foto selecionada</p>
+                </div>
+                <div id="successBadge" class="hidden absolute top-3 right-3 bg-cyan-500 text-black text-[9px] font-black px-3 py-1 rounded-full z-20 shadow-lg animate-bounce">FOTO PRONTA</div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="document.getElementById('cameraInput').click()" 
-                    class="bg-white text-black font-black py-7 rounded-2xl flex flex-col items-center gap-2 shadow-lg active:scale-95 transition-all">
-                    <span class="text-3xl">📸</span>
-                    <span class="text-[10px] uppercase tracking-tighter">Tirar Foto</span>
+                <button onclick="document.getElementById('fileCam').click()" class="bg-white text-black font-black py-6 rounded-2xl flex flex-col items-center gap-1 active:scale-95 transition-all shadow-xl hover:bg-gray-100">
+                    <span class="text-2xl">📸</span><span class="text-[10px] font-black uppercase tracking-tighter">Câmera Now</span>
                 </button>
-                <button onclick="document.getElementById('galleryInput').click()" 
-                    class="bg-white/5 text-white font-black py-7 rounded-2xl flex flex-col items-center gap-2 border border-white/10 active:scale-95 transition-all">
-                    <span class="text-3xl">🖼️</span>
-                    <span class="text-[10px] uppercase tracking-tighter">Galeria</span>
+                <button onclick="document.getElementById('fileGal').click()" class="bg-white/5 text-white font-black py-6 rounded-2xl flex flex-col items-center gap-1 border border-white/10 active:scale-95 transition-all hover:bg-white/10">
+                    <span class="text-2xl">🖼️</span><span class="text-[10px] font-black uppercase tracking-tighter">Da Galeria</span>
                 </button>
             </div>
             
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImage(this)">
-            <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handleImage(this)">
+            <input type="file" id="fileCam" accept="image/*" capture="environment" class="hidden" onchange="handleImage(this)">
+            <input type="file" id="fileGal" accept="image/*" class="hidden" onchange="handleImage(this)">
 
-            <button id="analyzeBtn" disabled onclick="execAnalysis()" 
-                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 transition-all text-sm">
-                Iniciar Auditoria
+            <button id="runBtn" disabled onclick="startAudit()" 
+                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 text-sm shadow-2xl transition-all">
+                Analisar Gôndola
             </button>
 
-            <div id="resultsContainer" class="hidden space-y-4 pt-6 animate-in fade-in duration-500">
-                <div class="flex justify-between items-center px-2">
-                    <div class="flex flex-col">
-                        <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Relatório Extraído</h2>
-                        <p id="locDisplay" class="text-[11px] text-[#00e5ff] font-bold"></p>
+            <div id="resultsBox" class="hidden animate-in fade-in duration-500 pb-10">
+                <div class="flex justify-between items-end mb-4 px-2">
+                    <div>
+                        <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Auditoria Finalizada</h2>
+                        <p id="locInfo" class="text-xs text-cyan-400 font-bold">📍 Manaus, AM</p>
                     </div>
-                    <button onclick="shareWhatsApp()" class="bg-[#25D366] text-black text-[10px] font-black px-5 py-2.5 rounded-full uppercase shadow-lg shadow-green-900/20 active:scale-90 transition-all">Enviar Zap</button>
+                    <button onclick="share()" class="bg-[#25D366] text-black text-[10px] font-black px-6 py-2.5 rounded-full uppercase shadow-lg active:scale-95">Relatório Zap</button>
                 </div>
-                
-                <div id="resultsList" class="glass-card overflow-hidden shadow-2xl">
+                <div id="tableBody" class="glass overflow-hidden divide-y divide-white/5">
                     </div>
             </div>
         </section>
 
-        <section id="tab-config" class="tab-content space-y-5">
-            <h2 class="text-xs font-black uppercase text-gray-500 tracking-widest px-2">Ajustes Técnicos</h2>
-            <div class="glass-card p-6">
-                <div class="flex justify-between items-center mb-5">
-                    <span class="text-xs font-bold text-gray-300">Status da Chave</span>
-                    <div id="statusDot" class="flex items-center gap-2">
-                         <span id="statusText" class="text-[9px] uppercase font-bold text-gray-600 tracking-widest">Inativa</span>
-                         <div class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)] transition-all duration-500"></div>
-                    </div>
+        <section id="tab-config" class="tab-content space-y-4">
+            <h2 class="text-[10px] font-black uppercase text-gray-500 px-3 tracking-widest">Segurança e Sistema</h2>
+            <div class="glass p-6 space-y-5">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-300">Conexão com Gemini</span>
+                    <div id="dot" class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_red]"></div>
                 </div>
-                <input type="password" id="apiKey" placeholder="Cole sua Gemini API Key" 
-                    class="w-full bg-black border border-white/10 rounded-xl p-4 text-sm text-cyan-400 mb-5 outline-none focus:border-[#00e5ff]">
-                <button onclick="confirmKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-xs shadow-lg shadow-cyan-500/20 active:scale-95 transition-all">Validar Chave</button>
+                <div class="space-y-2">
+                    <label class="text-[9px] uppercase font-bold text-gray-600">API Key Privada</label>
+                    <input type="password" id="key" placeholder="Insira sua Chave..." class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-cyan-400 outline-none focus:border-cyan-400 transition-all">
+                </div>
+                <button onclick="saveKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-[11px] tracking-widest active:scale-95 shadow-lg shadow-cyan-500/20">Verificar e Salvar</button>
             </div>
-            <div class="glass-card p-5 space-y-2">
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/5 pb-2">Marcas Alvo</p>
-                <p class="text-[10px] text-gray-500 leading-relaxed italic">
-                    Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene.
-                </p>
+            <div class="p-6 text-[10px] text-gray-600 leading-relaxed text-center italic">
+                A versão 1.2 Ultra utiliza o modelo 1.5-Flash-Latest para maior velocidade em conexões 4G de Manaus.
             </div>
         </section>
 
-    </div>
+    </main>
 
-    <nav class="fixed bottom-0 inset-x-0 bg-black/60 backdrop-blur-2xl border-t border-white/10 flex justify-around p-4 z-50 rounded-t-3xl shadow-2xl">
-        <button onclick="switchTab('scanner')" id="nav-scanner" class="nav-btn active flex flex-col items-center gap-1.5 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-            <span class="text-[9px] font-black uppercase tracking-tighter">Scanner</span>
+    <nav class="bg-black/90 backdrop-blur-2xl border-t border-white/5 flex justify-around pb-8 pt-3">
+        <button onclick="tab('scanner')" id="btn-scan" class="nav-btn active px-10 flex flex-col items-center gap-1.5 text-gray-500 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+            <span class="text-[9px] font-black uppercase tracking-widest">Scanner</span>
         </button>
-        <button onclick="switchTab('config')" id="nav-config" class="nav-btn flex flex-col items-center gap-1.5 text-gray-600 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            <span class="text-[9px] font-black uppercase tracking-tighter">Ajustes</span>
+        <button onclick="tab('config')" id="btn-conf" class="nav-btn px-10 flex flex-col items-center gap-1.5 text-gray-500 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            <span class="text-[9px] font-black uppercase tracking-widest">Ajustes</span>
         </button>
     </nav>
 
-    <div id="loading" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex flex-col items-center justify-center p-12">
-        <div class="relative w-20 h-20 mb-6">
-            <div class="absolute inset-0 border-4 border-[#00e5ff]/20 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-        <p class="text-[#00e5ff] font-black italic animate-pulse uppercase text-xs tracking-[0.3em]">Auditoria v1.1</p>
-        <p class="text-white/20 text-[8px] uppercase mt-4 font-bold tracking-widest">Processando dados em Manaus</p>
+    <div id="loader" class="hidden fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-12 text-center backdrop-blur-lg">
+        <div class="w-16 h-16 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_20px_rgba(0,229,255,0.3)]"></div>
+        <p class="text-[#00e5ff] font-black italic animate-pulse text-sm tracking-[0.2em] uppercase">Auditoria PriceHair em Curso...</p>
+        <p class="text-gray-600 text-[10px] mt-4 font-bold uppercase">Aguardando Inteligência Artificial</p>
     </div>
 
-    <canvas id="canvas" class="hidden"></canvas>
+    <canvas id="cv" class="hidden"></canvas>
 
     <script>
-        let base64 = null;
+        let rawImg = null;
         let isReady = false;
-        let locString = "Manaus, AM";
+        let locData = "Manaus, AM";
 
-        function switchTab(t) {
+        function tab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'text-[#00e5ff]'));
             document.getElementById(`tab-${t}`).classList.add('active-tab');
-            document.getElementById(`nav-${t}`).classList.add('active', 'text-[#00e5ff]');
+            document.getElementById(`btn-${t === 'scanner' ? 'scan' : 'conf'}`).classList.add('active', 'text-[#00e5ff]');
         }
 
-        async function confirmKey() {
-            const k = document.getElementById('apiKey').value.trim();
+        async function saveKey() {
+            const k = document.getElementById('key').value.trim();
             if(!k) return;
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${k}`);
-                if(res.ok) {
-                    isReady = true;
-                    document.querySelector('#statusDot div').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
-                    document.getElementById('statusText').innerText = "Ativa";
-                    document.getElementById('statusText').className = "text-[9px] uppercase font-bold text-cyan-400 tracking-widest";
-                    alert("Chave Validada com Sucesso!");
-                    switchTab('scanner');
-                    refreshBtn();
-                } else { throw new Error(); }
-            } catch(e) { alert("Chave inválida. Tente novamente."); }
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${k}`);
+            if(res.ok) {
+                isReady = true;
+                document.getElementById('dot').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
+                localStorage.setItem('gh_key_3', k);
+                alert("CONECTADO COM SUCESSO!");
+                tab('scanner');
+                checkStatus();
+            } else { alert("ERRO: Chave API inválida."); }
         }
+
+        window.onload = () => { 
+            const k = localStorage.getItem('gh_key_3');
+            if(k) { document.getElementById('key').value = k; saveKey(); }
+        };
 
         function handleImage(input) {
             const file = input.files[0];
             if(!file) return;
-            const r = new FileReader();
-            r.onload = function(e) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
                 const img = new Image();
-                img.onload = function() {
-                    const canvas = document.getElementById('canvas');
-                    let w = img.width, h = img.height, max = 1200;
-                    if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
+                img.onload = () => {
+                    // Feedback Visual de Sucesso
+                    document.getElementById('imgPreview').src = e.target.result;
+                    document.getElementById('imgPreview').classList.remove('hidden');
+                    document.getElementById('uploadStatus').classList.add('hidden');
+                    document.getElementById('successBadge').classList.remove('hidden');
+                    document.getElementById('previewArea').classList.add('loaded');
+
+                    const canvas = document.getElementById('cv');
+                    let w = img.width, h = img.height, max = 1100;
+                    if(w > h && w > max) { h *= max/w; w = max; } else if(h > max) { w *= max/h; h = max; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-                    refreshBtn();
+                    rawImg = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
+                    checkStatus();
                 };
                 img.src = e.target.result;
             };
-            r.readAsDataURL(file);
+            reader.readAsDataURL(file);
         }
 
-        function refreshBtn() {
-            const btn = document.getElementById('analyzeBtn');
-            const st = document.getElementById('storeName').value.trim();
-            if(isReady && base64 && st.length > 2) {
+        function checkStatus() {
+            const btn = document.getElementById('runBtn');
+            const store = document.getElementById('storeName').value.length >= 2;
+            if(isReady && rawImg && store) {
                 btn.disabled = false;
-                btn.className = "w-full py-5 rounded-2xl bg-[#00e5ff] text-black font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(0,229,255,0.3)] text-sm active:scale-95 transition-all";
+                btn.classList.replace('bg-gray-800', 'bg-[#00e5ff]');
+                btn.classList.replace('text-gray-500', 'text-black');
+                btn.style.opacity = "1";
+            } else {
+                btn.disabled = true;
+                btn.classList.replace('bg-[#00e5ff]', 'bg-gray-800');
+                btn.classList.replace('text-black', 'text-gray-500');
+                btn.style.opacity = "0.5";
             }
         }
+        document.getElementById('storeName').oninput = checkStatus;
 
-        document.getElementById('storeName').addEventListener('input', refreshBtn);
-
-        async function execAnalysis() {
-            document.getElementById('loading').classList.remove('hidden');
+        async function startAudit() {
+            document.getElementById('loader').classList.remove('hidden');
+            const key = localStorage.getItem('gh_key_3');
+            const store = document.getElementById('storeName').value.toUpperCase();
             
+            // Geolocalização
             try {
-                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000}));
-                const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-                const d = await geo.json();
-                locString = `${d.address.city || d.address.town || 'Manaus'}, ${d.address.state || 'AM'}`;
-            } catch(e) { console.log("GPS N/A"); }
+                const p = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout:6000}));
+                const g = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+                const d = await g.json();
+                locData = `${d.address.city || d.address.town || 'Manaus'}, ${d.address.state || 'AM'}`;
+            } catch(e) { locData = "Manaus, AM"; }
 
-            const k = document.getElementById('apiKey').value.trim();
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${k}`;
-            
-            const payload = {
-                contents: [{ parts: [
-                    { text: "Aja como auditor. Extraia Marca, Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato rigoroso: Marca Item|Preço. Use | para separar o preço." },
-                    { inline_data: { mime_type: "image/jpeg", data: base64 } }
-                ]}]
-            };
+            // Endpoint Estável v1
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            const payload = { contents: [{ parts: [
+                { text: "Aja como auditor profissional de gôndolas. Extraia estritamente Marca, Nome Curto do Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato por linha: Nome do Item|Preço. Use | como separador único. Ignore promoções e kits." },
+                { inline_data: { mime_type: "image/jpeg", data: rawImg } }
+            ]}]};
 
             try {
                 const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
                 const data = await res.json();
-                const out = data.candidates[0].content.parts[0].text;
+                if(!data.candidates) throw new Error();
                 
-                const list = document.getElementById('resultsList');
-                list.innerHTML = out.trim().split('\n').map(line => {
-                    const p = line.split('|');
-                    return `
-                        <div class="price-row">
-                            <div class="text-[11px] font-bold text-gray-300 leading-tight pr-4 uppercase">${p[0] || '---'}</div>
-                            <div class="price-tag text-xs">${p[1] || '---'}</div>
-                        </div>
-                    `;
-                }).join('');
+                const text = data.candidates[0].content.parts[0].text;
+                
+                const table = document.getElementById('tableBody');
+                if (text.trim().length < 5) {
+                    table.innerHTML = `<div class="p-8 text-center text-xs font-bold text-gray-600">NENHUM ITEM ALVO DETECTADO</div>`;
+                } else {
+                    table.innerHTML = text.trim().split('\n').map(line => {
+                        const [item, price] = line.split('|');
+                        return `<div class="price-row active:bg-white/5"><div class="text-[11px] font-black text-gray-300 uppercase leading-tight pr-4">${item}</div><div class="price-tag text-[11px]">${price || 'R$ ---'}</div></div>`;
+                    }).join('');
+                }
 
-                document.getElementById('locDisplay').innerText = `📍 ${locString}`;
-                document.getElementById('resultsContainer').classList.remove('hidden');
+                document.getElementById('locInfo').innerText = `📍 ${locData}`;
+                document.getElementById('resultsBox').classList.remove('hidden');
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            } catch(e) { alert("Erro ao analisar imagem."); }
-            finally { document.getElementById('loading').classList.add('hidden'); }
+            } catch(e) { alert("ERRO NA ANÁLISE: Verifique a foto e sua chave API."); }
+            finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
-        function shareWhatsApp() {
-            const st = document.getElementById('storeName').value.toUpperCase();
-            const itms = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
-            const txt = `*PRICEHAIR v1.1*\n🏪 *LOJA:* ${st}\n📍 *LOCAL:* ${locString}\n\n${itms}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
+        function share() {
+            const s = document.getElementById('storeName').value.toUpperCase();
+            const rows = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
+            const t = `*PRICEHAIR 3 - v1.2*\n🏪 LOJA: ${s}\n📍 LOCAL: ${locData}\n\n*COLETA:*\n${rows}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(t)}`);
         }
     </script>
 </body>
