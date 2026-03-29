@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v2.9 Focus</title>
+    <title>PriceScout v3.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
     
     <style>
         :root { --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #fff; --border: #2e2e42; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 15px 15px 100px 15px; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 20px 16px 100px 16px; box-sizing: border-box; }
         
-        header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .logo { font-weight: 800; font-size: 22px; color: var(--accent); }
-        .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 8px; color: #aaa; }
+        .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; color: #aaa; }
 
         .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:disabled { opacity: 0.4; }
+        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; }
+        .btn:disabled { background: #333; color: #666; }
         
-        input { background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
+        input { background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
+        input:focus { border-color: var(--accent); outline: none; }
 
         #preview { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; border: 2px solid var(--border); }
         
@@ -35,44 +36,45 @@
         }
         .prod-info { flex: 1; padding-right: 10px; }
         .prod-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
-        .prod-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
-        .prod-price { font-weight: 800; font-size: 18px; white-space: nowrap; }
+        .prod-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; }
+        .prod-price { font-weight: 800; font-size: 19px; color: #fff; }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 15px; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 11px; text-decoration: none; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 20px; z-index: 100; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 11px; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">PriceScout<span class="v-tag">v2.9 Focus</span></div>
+        <div class="logo">PriceScout<span class="v-tag">v3.0</span></div>
     </header>
 
     <div id="capture-area">
         <div class="card">
-            <small style="color: var(--accent); font-weight: bold; display: block; margin-bottom: 8px;">CHAVE DE API</small>
-            <input type="password" id="api-key" placeholder="Insira sua Gemini API Key">
+            <label style="color: var(--accent); font-size: 11px; font-weight: bold; margin-bottom: 5px; display: block;">GOOGLE AI KEY</label>
+            <input type="password" id="api-key" placeholder="Cole sua API Key aqui" oninput="checkKey()">
+            <small id="key-msg" style="color: #ff4444; font-size: 10px;">Chave necessária para analisar</small>
         </div>
 
         <img id="preview">
 
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button class="btn" onclick="takeMedia('camera')">📸 Câmera</button>
-                <button class="btn" style="background:#2e2e42; color:#fff" onclick="takeMedia('file')">📁 Galeria</button>
+                <button class="btn" onclick="openMedia('camera')">📸 Câmera</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="openMedia('file')">📁 Galeria</button>
             </div>
-            <input type="file" id="file-in" hidden accept="image/*">
+            <input type="file" id="media-input" hidden accept="image/*">
         </div>
 
         <div id="loader">
-            <small id="status-msg" style="color:var(--accent)">Lendo gôndola...</small>
+            <small id="status-msg" style="color:var(--accent)">Identificando produtos...</small>
             <div class="p-bar"><div class="p-fill"></div></div>
         </div>
 
         <div id="results"></div>
 
-        <button class="btn" id="btn-go" style="display:none; margin-top:15px;" onclick="run()">Analisar Preços</button>
+        <button class="btn" id="btn-go" style="display:none; margin-top:15px;" onclick="analyze()" disabled>Analisar Preços</button>
     </div>
 
     <nav>
@@ -82,22 +84,42 @@
     </nav>
 
     <script>
-        let base64Img = null;
+        let imgBase64 = null;
 
-        // Auto-load API Key
+        // Recupera chave salva ao abrir
         window.onload = () => {
-            const k = localStorage.getItem('ps_key');
-            if(k) document.getElementById('api-key').value = k;
+            const saved = localStorage.getItem('ps_api_key_v3');
+            if(saved) {
+                document.getElementById('api-key').value = saved;
+                checkKey();
+            }
         };
 
-        function takeMedia(type) {
-            const input = document.getElementById('file-in');
+        function checkKey() {
+            const val = document.getElementById('api-key').value.trim();
+            const msg = document.getElementById('key-msg');
+            const btn = document.getElementById('btn-go');
+            
+            if(val.length > 20) {
+                msg.innerText = "🟢 Chave pronta";
+                msg.style.color = "#00ff00";
+                localStorage.setItem('ps_api_key_v3', val);
+                if(imgBase64) btn.disabled = false;
+            } else {
+                msg.innerText = "🔴 Chave necessária para analisar";
+                msg.style.color = "#ff4444";
+                btn.disabled = true;
+            }
+        }
+
+        function openMedia(type) {
+            const input = document.getElementById('media-input');
             if(type === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
 
-        document.getElementById('file-in').onchange = e => {
+        document.getElementById('media-input').onchange = e => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
@@ -111,42 +133,47 @@
                     if(w > MAX) { h *= MAX/w; w = MAX; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    base64Img = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                    
+                    imgBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
                     const pre = document.getElementById('preview');
                     pre.src = canvas.toDataURL('image/jpeg');
                     pre.style.display = 'block';
                     document.getElementById('btn-go').style.display = 'flex';
+                    checkKey();
                     document.getElementById('results').innerHTML = '';
                 };
             };
             reader.readAsDataURL(file);
         };
 
-        async function run() {
+        async function analyze() {
             const key = document.getElementById('api-key').value.trim();
-            if(!key) return alert("Por favor, insira sua API Key");
-            localStorage.setItem('ps_key', key);
-
-            const btn = document.getElementById('btn-go');
             const loader = document.getElementById('loader');
+            const btn = document.getElementById('btn-go');
+            
             loader.style.display = 'block';
             btn.disabled = true;
 
-            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste todos os produtos e seus preços individuais visíveis na imagem. Marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
+            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos e seus preços individuais. Foco em: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: base64Img}}]}] })
+                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgBase64}}]}] })
                 });
 
                 const data = await res.json();
+                
+                if(data.error) {
+                    throw new Error(data.error.message);
+                }
+
                 let txt = data.candidates[0].content.parts[0].text;
                 const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
                 
                 const area = document.getElementById('results');
-                area.innerHTML = `<h3 style="margin:20px 0 10px 0">Preços Detectados</h3>`;
+                area.innerHTML = `<h3 style="margin:20px 0 10px 0; font-size:16px;">Preços na Gôndola</h3>`;
                 
                 json.produtos.forEach(p => {
                     area.innerHTML += `
@@ -161,8 +188,7 @@
                 btn.style.display = 'none';
 
             } catch (err) {
-                alert("Erro ao ler preços. Verifique sua chave ou a nitidez da foto.");
-                console.error(err);
+                alert("Erro: " + err.message);
             }
             loader.style.display = 'none';
             btn.disabled = false;
