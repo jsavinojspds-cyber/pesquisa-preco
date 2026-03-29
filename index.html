@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceScout v4.2 Ultra</title>
+    <title>PriceScout v4.3 Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, system-ui, sans-serif; }
+        body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         .accent-cyan { color: #00e5ff; }
         .bg-cyan { background-color: #00e5ff; }
         .card { background: #16161e; border: 1px solid #27272a; border-radius: 12px; }
         .loader { border-top-color: #00e5ff; animation: spinner 0.6s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; transition: all 0.3s; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; }
         input:focus { outline: none; border-color: #00e5ff; }
     </style>
 </head>
@@ -21,56 +21,56 @@
     <header class="mb-6">
         <div class="flex justify-center items-center gap-2 mb-4">
             <h1 class="text-2xl font-bold accent-cyan">PriceScout</h1>
-            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.2 ULTRA</span>
+            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.3 ULTRA</span>
         </div>
         
-        <div class="card p-4">
-            <div class="flex justify-between items-center mb-2 text-[10px] uppercase font-bold tracking-widest text-gray-500">
+        <div class="card p-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-2 text-[10px] uppercase font-black tracking-tighter text-gray-500">
                 <span>Gemini API Key</span>
                 <div id="apiStatus" class="flex items-center gap-2">
                     <span id="statusDot" class="status-dot bg-gray-700"></span>
-                    <span id="statusText">Aguardando...</span>
+                    <span id="statusText">Aguardando</span>
                 </div>
             </div>
             <div class="flex gap-2">
-                <input type="password" id="apiKey" placeholder="Cole sua chave aqui..." 
-                    class="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-cyan-400 text-sm">
-                <button onclick="checkApi()" class="bg-cyan text-black px-3 rounded-lg text-[10px] font-bold active:opacity-70 transition-colors">
-                    VERIFICAR
+                <input type="password" id="apiKey" placeholder="Cole sua chave..." 
+                    class="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-cyan-400 text-sm appearance-none">
+                <button onclick="checkApi()" class="bg-cyan text-black px-4 rounded-lg text-[10px] font-black uppercase active:scale-95 transition-transform">
+                    Verificar
                 </button>
             </div>
         </div>
     </header>
 
     <main class="space-y-4">
-        <div class="card p-6 text-center border-dashed border-2 border-gray-800">
+        <div class="card p-6 text-center border-dashed border-2 border-gray-800 active:border-cyan transition-colors">
             <input type="file" id="cameraInput" accept="image/*" class="hidden">
             <button onclick="document.getElementById('cameraInput').click()" 
-                class="w-full bg-white text-black font-bold py-4 rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+                class="w-full bg-white text-black font-black py-4 rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
                 <span class="text-lg">📷 SELECIONAR FOTO</span>
-                <span class="text-[10px] opacity-70 uppercase">Câmera ou Galeria</span>
+                <span class="text-[10px] opacity-60 uppercase">Câmera ou Galeria</span>
             </button>
-            <p id="fileName" class="text-xs text-gray-500 mt-2 italic truncate px-4"></p>
+            <p id="fileName" class="text-[10px] text-gray-500 mt-3 italic truncate px-4"></p>
         </div>
 
         <button id="analyzeBtn" disabled onclick="analyzeImage()" 
-            class="w-full bg-gray-800 text-gray-400 font-bold py-4 rounded-xl opacity-50 cursor-not-allowed transition-all">
-            ANALISAR PREÇOS
+            class="w-full bg-gray-800 text-gray-500 font-black py-5 rounded-xl opacity-50 cursor-not-allowed transition-all uppercase tracking-widest shadow-lg">
+            Analisar Preços
         </button>
 
-        <div id="loading" class="hidden flex flex-col items-center py-8">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12 mb-4"></div>
-            <p class="accent-cyan animate-pulse text-sm font-bold">Lendo preços em Manaus...</p>
+        <div id="loading" class="hidden flex flex-col items-center py-10">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-800 h-10 w-10 mb-4"></div>
+            <p class="accent-cyan animate-pulse text-xs font-black uppercase tracking-widest">Processando em Manaus...</p>
         </div>
 
-        <div id="resultsContainer" class="hidden space-y-4">
+        <div id="resultsContainer" class="hidden space-y-4 animate-in fade-in duration-500">
             <div class="flex justify-between items-center px-1">
-                <h2 class="text-[10px] font-black uppercase tracking-widest text-gray-400">Dados Extraídos</h2>
-                <button onclick="copyToWhatsApp()" class="text-[10px] bg-green-600 text-white px-4 py-2 rounded-full font-bold uppercase shadow-lg shadow-green-900/20">
-                    WhatsApp
+                <h2 class="text-[10px] font-black uppercase tracking-tighter text-gray-500">Produtos Identificados</h2>
+                <button onclick="copyToWhatsApp()" class="text-[10px] bg-green-600 text-white px-5 py-2 rounded-full font-black uppercase">
+                    Mandar WhatsApp
                 </button>
             </div>
-            <div id="resultsList" class="card divide-y divide-gray-800"></div>
+            <div id="resultsList" class="card divide-y divide-gray-800 overflow-hidden"></div>
         </div>
     </main>
 
@@ -80,39 +80,41 @@
         let compressedImageBase64 = null;
         let isApiValid = false;
 
+        // Nova verificação ativa: Tenta uma micro-geração de texto
         async function checkApi() {
-            // Remove espaços extras que podem vir ao colar
-            const keyInput = document.getElementById('apiKey');
-            const key = keyInput.value.trim();
-            keyInput.value = key; 
-
+            const key = document.getElementById('apiKey').value.trim();
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
             
-            if (!key) { alert("A chave está vazia!"); return; }
+            if (!key) return;
 
-            text.innerText = "Validando...";
+            text.innerText = "Testando...";
             
             try {
-                // Tenta uma requisição de metadados do modelo para validar a chave
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash?key=${key}`);
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "oi" }] }] })
+                });
+                
                 const data = await res.json();
 
-                if (res.ok && !data.error) {
+                if (res.ok && data.candidates) {
                     isApiValid = true;
                     dot.className = "status-dot bg-green-500 shadow-[0_0_10px_#00e5ff]";
                     text.innerText = "Chave Ativa";
                     text.style.color = "#00e5ff";
                     updateAnalyzeButton();
                 } else {
-                    throw new Error(data.error?.message || "Erro desconhecido");
+                    const errorMsg = data.error?.message || "Erro desconhecido";
+                    throw new Error(errorMsg);
                 }
             } catch (e) {
                 isApiValid = false;
-                dot.className = "status-dot bg-red-600 shadow-[0_0_10px_#ef4444]";
-                text.innerText = "Inválida";
+                dot.className = "status-dot bg-red-500 shadow-[0_0_10px_#ef4444]";
+                text.innerText = "Erro";
                 text.style.color = "#ef4444";
-                console.error(e);
+                alert("Erro na API: " + e.message);
             }
         }
 
@@ -120,7 +122,8 @@
             const btn = document.getElementById('analyzeBtn');
             if (isApiValid && compressedImageBase64) {
                 btn.disabled = false;
-                btn.className = "w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-cyan-500/20";
+                btn.className = "w-full bg-[#00e5ff] text-black font-black py-5 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,229,255,0.3)] uppercase tracking-widest cursor-pointer";
+                btn.style.opacity = "1";
             }
         }
 
@@ -128,7 +131,7 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('fileName').innerText = "SELECIONADO: " + file.name.toUpperCase();
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
@@ -153,7 +156,7 @@
         });
 
         async function analyzeImage() {
-            const key = document.getElementById('apiKey').value;
+            const key = document.getElementById('apiKey').value.trim();
             const loading = document.getElementById('loading');
             const resultsContainer = document.getElementById('resultsContainer');
             
@@ -164,7 +167,7 @@
             const payload = {
                 contents: [{
                     parts: [
-                        { text: "Extraia Marca, Item e Preço: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato: [Marca] [Item] - R$ [Preço]. Ignore promoções de quantidade e fotos borradas." },
+                        { text: "Extraia apenas Marca, Item e Preço: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato: [Marca] [Item] - R$ [Preço]. Ignore promoções 'leve 3 pague 2' ou kits." },
                         { inline_data: { mime_type: "image/jpeg", data: compressedImageBase64 } }
                     ]
                 }],
@@ -185,16 +188,17 @@
                 });
 
                 const data = await response.json();
-                const text = data.candidates[0].content.parts[0].text;
+                if(!data.candidates) throw new Error("Sem resposta do modelo.");
                 
+                const text = data.candidates[0].content.parts[0].text;
                 const list = document.getElementById('resultsList');
                 list.innerHTML = text.trim().split('\n').map(line => `
-                    <div class="p-4 text-sm font-semibold border-b border-gray-800 last:border-0">${line}</div>
+                    <div class="p-4 text-xs font-bold border-b border-gray-800 last:border-0 hover:bg-gray-800/30">${line}</div>
                 `).join('');
 
                 resultsContainer.classList.remove('hidden');
             } catch (error) {
-                alert('Erro na extração. Verifique se a foto está nítida.');
+                alert('Erro na extração: ' + error.message);
             } finally {
                 loading.classList.add('hidden');
                 document.getElementById('analyzeBtn').disabled = false;
@@ -203,7 +207,7 @@
 
         function copyToWhatsApp() {
             const items = Array.from(document.querySelectorAll('#resultsList div')).map(d => d.innerText).join('\n');
-            window.open(`https://wa.me/?text=${encodeURIComponent("*PRICESCOUT v4.2*\n\n" + items)}`, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent("*PRICESCOUT v4.3*\n\n" + items)}`, '_blank');
         }
     </script>
 </body>
