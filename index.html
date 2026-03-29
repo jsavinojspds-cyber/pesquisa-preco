@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>DutyPrice 1.6v</title>
+    <title>DutyPrice 2.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
-            --dabelle-blue: #002D58;
+            --dabelle-blue: #051937;
+            --dabelle-blue-accent: #004d7a;
             --dabelle-gold: #C5A059;
             --ios-bg: #F2F2F7;
             --white: #FFFFFF;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
         * { 
@@ -29,148 +31,254 @@
             margin: 0;
             padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
             color: #1C1C1E;
-            overflow-x: hidden; /* Evita scroll lateral */
+            overflow-x: hidden;
         }
 
+        /* HEADER PREMIUM */
         header {
-            background: var(--dabelle-blue); color: white; padding: 15px; 
-            text-align: center; position: relative;
+            background: var(--dabelle-blue);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        header h1 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, var(--dabelle-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .version-tag { 
-            font-size: 0.6rem; background: rgba(255,255,255,0.15); 
-            padding: 2px 8px; border-radius: 20px; position: absolute; top: 10px; right: 10px; 
-        }
-
-        nav { display: flex; background: var(--white); border-bottom: 0.5px solid #C6C6C8; position: sticky; top: 0; z-index: 100; }
-        nav button { flex: 1; padding: 14px; border: none; background: none; font-weight: 600; color: #8E8E93; font-size: 0.9rem; }
-        nav button.active { color: var(--dabelle-blue); border-bottom: 3px solid var(--dabelle-gold); }
-
-        .view { display: none; padding: 15px; padding-bottom: 180px; width: 100%; }
-        .view.active { display: block; }
-
-        .card { 
-            background: var(--white); 
+            font-size: 0.65rem; 
+            background: rgba(255,255,255,0.1); 
+            padding: 4px 10px; 
             border-radius: 20px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            width: 100%;
+            position: absolute; 
+            top: 10px; 
+            right: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        
-        label { font-size: 0.65rem; font-weight: 700; color: #8E8E93; margin-bottom: 4px; display: block; text-transform: uppercase; }
-        
+
+        /* NAVEGAÇÃO SEGMENTADA (iOS Style) */
+        nav {
+            background: var(--ios-bg);
+            padding: 10px 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-pill {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: #E3E3E8;
+            color: #8E8E93;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-pill.active {
+            background: var(--white);
+            color: var(--dabelle-blue);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .view { display: none; padding: 0 20px 200px 20px; }
+        .view.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS MODERNOS */
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--dabelle-gold);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* GRID DE MÉTRICAS */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: var(--dabelle-blue);
+            padding: 18px;
+            border-radius: 20px;
+            color: white;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-box::after {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .metric-label { font-size: 0.7rem; opacity: 0.7; font-weight: 600; text-transform: uppercase; }
+        .metric-value { font-size: 1.4rem; font-weight: 800; display: block; margin-top: 5px; color: var(--dabelle-gold); }
+
+        /* FORMULÁRIO */
         input, select {
-            width: 100%; height: 48px; border-radius: 12px; border: 1px solid #E5E5EA;
-            padding: 0 12px; font-size: 1rem; margin-bottom: 10px; background: #F9F9FB; font-weight: 600;
+            width: 100%; height: 56px; border-radius: 16px; border: 1px solid #E5E5EA;
+            padding: 0 16px; font-size: 1.1rem; margin-bottom: 12px; background: #F9F9FB; font-weight: 600;
         }
 
-        /* AJUSTE DO LAYOUT QUE ESTAVA SAINDO */
-        .flex-row { 
-            display: flex; 
-            gap: 10px; 
-            width: 100%; 
-            margin-bottom: 10px;
-            flex-wrap: nowrap; /* Garante que fiquem lado a lado */
+        .comp-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 0.5px solid #F2F2F7;
         }
-        .flex-row > div { flex: 1; min-width: 0; } /* min-width evita quebra de layout */
+        .comp-input { width: 100px !important; height: 42px !important; margin: 0 !important; text-align: right; }
 
-        .comp-box { background: #F2F2F7; border-radius: 14px; padding: 10px; margin-top: 10px; }
-        .comp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 10px; }
-        .comp-input { width: 90px !important; height: 38px !important; margin-bottom: 0 !important; text-align: right; font-size: 0.9rem !important; }
-
-        .stats-grid { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
-        .stat-card { flex: 1; background: var(--dabelle-blue); color: white; padding: 12px; border-radius: 16px; text-align: center; }
-        .stat-card b { display: block; font-size: 1.2rem; color: var(--dabelle-gold); }
-
-        .btn-report { width: 100%; height: 50px; border-radius: 12px; border: none; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
-        .btn-pdf { background: #E5E5EA; color: #1C1C1E; }
-        .btn-wa { background: #25D366; color: white; }
-
-        .action-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 15px 20px calc(15px + env(safe-area-inset-bottom));
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); border-top: 0.5px solid #C6C6C8; z-index: 1000;
+        /* RODAPÉ FIXO FLOATING */
+        .footer-cta {
+            position: fixed; bottom: 30px; left: 20px; right: 20px;
+            background: rgba(5, 25, 55, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 22px;
+            display: flex; gap: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            z-index: 1000;
         }
-        .btn-save { width: 100%; height: 56px; background: var(--dabelle-blue); color: white; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 700; box-shadow: 0 4px 15px rgba(0,45,88,0.2); }
 
-        #chartCanal { max-height: 200px; width: 100% !important; }
+        .btn-main {
+            flex: 2; height: 54px; background: var(--dabelle-gold); color: var(--dabelle-blue);
+            border: none; border-radius: 14px; font-size: 1rem; font-weight: 800;
+        }
+
+        /* HISTÓRICO LIST */
+        .history-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px 0;
+            border-bottom: 0.5px solid #F2F2F7;
+        }
+        .icon-circle {
+            width: 44px; height: 44px; background: #F2F2F7; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>DutyPrice</h1>
-    <span class="version-tag">1.6v</span>
+    <span class="version-tag">2.0v</span>
 </header>
 
 <nav>
-    <button id="tab-collect" class="active" onclick="switchTab('collect')">COLETA</button>
-    <button id="tab-dash" onclick="switchTab('dash')">DASHBOARD</button>
+    <button id="tab-collect" class="nav-pill active" onclick="switchTab('collect')">COLETA</button>
+    <button id="tab-dash" class="nav-pill" onclick="switchTab('dash')">DASHBOARD</button>
 </nav>
 
 <div id="view-collect" class="view active">
     <div class="card">
-        <label>Nome da Loja</label>
-        <input type="text" id="store-name" placeholder="Ex: Atacadão Torquato">
-        
-        <div class="flex-row">
-            <div><label>Bairro</label><input type="text" id="store-bairro" placeholder="Adrianópolis"></div>
-            <div><label>Cidade</label><input type="text" id="store-cidade" value="Manaus"></div>
-        </div>
-        
-        <div class="flex-row">
-            <div style="flex: 0.3;"><label>UF</label><input type="text" id="store-uf" value="AM" maxlength="2"></div>
-            <div style="flex: 1;"><label>Canal</label>
-                <select id="store-channel">
-                    <option value="C&C">C&C (Atacarejo)</option>
-                    <option value="Tradicional">Tradicional</option>
-                    <option value="1-4 ckt">1-4 ckt</option>
-                    <option value="5-9 ckt">5-9 ckt</option>
-                    <option value="10+ ckt">10+ ckt</option>
-                </select>
-            </div>
+        <div class="section-title">📍 Informações da Visita</div>
+        <input type="text" id="store-name" placeholder="Ex: Assaí Torquato">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="store-bairro" placeholder="Bairro">
+            <select id="store-channel">
+                <option value="C&C">C&C</option>
+                <option value="Tradicional">Trad</option>
+                <option value="1-4 ckt">1-4 Ckt</option>
+                <option value="10+ ckt">10+ Ckt</option>
+            </select>
         </div>
     </div>
     <div id="product-list"></div>
 </div>
 
 <div id="view-dash" class="view">
-    <div class="card" id="pdf-area">
-        <div class="flex-row">
-            <div><label>Início</label><input type="date" id="date-start" onchange="renderDashboard()"></div>
-            <div><label>Fim</label><input type="date" id="date-end" onchange="renderDashboard()"></div>
+    <div id="pdf-area">
+        <div class="card" style="background:none; box-shadow:none; padding:0;">
+            <div class="metrics-container">
+                <div class="metric-box">
+                    <span class="metric-label">Total Visitas</span>
+                    <b class="metric-value" id="d-visitas">0</b>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Preço Médio</span>
+                    <b class="metric-value" id="d-media">R$ 0,00</b>
+                </div>
+            </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">Visitas<b id="d-visitas">0</b></div>
-            <div class="stat-card">Média DaBelle<b id="d-media">R$ 0,00</b></div>
+        <div class="card">
+            <div class="section-title">📊 Mix de Canais Coletados</div>
+            <div style="height: 250px;">
+                <canvas id="chartCanal"></canvas>
+            </div>
         </div>
-        
-        <canvas id="chartCanal"></canvas>
-        <div id="history-log" style="margin-top:15px; font-size:0.8rem; border-top: 1px solid #eee; padding-top:10px;"></div>
+
+        <div class="card">
+            <div class="section-title">📅 Período do Relatório</div>
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="date-start" onchange="renderDashboard()">
+                <input type="date" id="date-end" onchange="renderDashboard()">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🕒 Últimas 5 Visitas</div>
+            <div id="history-log"></div>
+        </div>
     </div>
 
-    <div class="card">
-        <button class="btn-report btn-pdf" onclick="exportPDF()">📄 Relatório PDF</button>
-        <button class="btn-report btn-wa" onclick="shareWA('periodo')">💬 Resumo WhatsApp</button>
-        <button class="btn-report btn-wa" style="background:#128C7E" onclick="shareWA('loja')">💬 Última Loja WhatsApp</button>
+    <div style="margin-top:20px;">
+        <button class="btn-main" style="width:100%; margin-bottom:10px; background:#E5E5EA;" onclick="exportPDF()">📄 Gerar PDF Analítico</button>
+        <button class="btn-main" style="width:100%; background:#25D366; color:white;" onclick="shareWA('periodo')">💬 Enviar Resumo WhatsApp</button>
     </div>
-    <button onclick="clearAll()" style="color:red; width:100%; border:none; background:none; padding:10px; font-size:0.7rem; font-weight:bold;">APAGAR HISTÓRICO</button>
+    
+    <button onclick="clearAll()" style="width:100%; margin-top:30px; color:red; background:none; border:none; font-size:0.7rem;">DELETAR TODA A BASE</button>
 </div>
 
-<div class="action-bar" id="footer-save">
-    <button class="btn-save" onclick="saveVisit()">Salvar Visita</button>
+<div class="footer-cta" id="footer-save">
+    <div style="color:white; flex:1;">
+        <div style="font-size:0.7rem; opacity:0.8;">Progresso</div>
+        <div id="progress-text" style="font-weight:700;">Loja não iniciada</div>
+    </div>
+    <button class="btn-main" onclick="saveVisit()">SALVAR VISITA</button>
 </div>
 
 <script>
     const dbSchema = [
-        { cat: "Kits", prod: "DABELLE - KIT SH+COND - 425ML", comps: ["Elseve", "Pantene", "Lola", "Salon Line"] },
-        { cat: "Creme de Pentear", prod: "DABELLE - CREME DE PENTEAR - 270G", comps: ["Elseve", "Pantene", "Salon Line", "Skala"] },
-        { cat: "Máscaras", prod: "DABELLE - MASCARA - 400G", comps: ["Elseve", "Pantene", "Lola", "Novex"] },
-        { cat: "Óleo em Creme", prod: "DABELLE - OLEO EM CREME - 190ML", comps: ["Elseve", "Pantene", "Amend"] },
-        { cat: "Óleo Capilar", prod: "DABELLE - OLEO - 45ML", comps: ["Elseve", "Pantene", "Amend"] },
-        { cat: "Tratamento 1KG", prod: "DABELLE - CPP JUJUBA - 1KG", comps: ["Skala", "Salon Line"] },
+        { cat: "Kits", prod: "DABELLE - KIT SH+COND - 425ML", comps: ["Elseve", "Pantene", "Lola"] },
+        { cat: "Creme de Pentear", prod: "DABELLE - CREME DE PENTEAR - 270G", comps: ["Elseve", "Skala", "Salon Line"] },
+        { cat: "Máscaras", prod: "DABELLE - MASCARA - 400G", comps: ["Elseve", "Novex", "Lola"] },
+        { cat: "Óleos", prod: "DABELLE - OLEO EM CREME - 190ML", comps: ["Elseve", "Pantene", "Amend"] },
+        { cat: "Óleos", prod: "DABELLE - OLEO - 45ML", comps: ["Elseve", "Pantene", "Amend"] },
+        { cat: "Tratamento", prod: "DABELLE - CPP JUJUBA - 1KG", comps: ["Skala", "Salon Line"] },
         { cat: "Gelatina", prod: "DABELLE - GELATINA - 500G", comps: ["Salon Line", "Lola"] }
     ];
 
@@ -181,11 +289,14 @@
         container.innerHTML = dbSchema.map((item, idx) => `
             <div class="card">
                 <small style="color:var(--dabelle-gold); font-weight:800;">${item.cat}</small>
-                <h2 style="font-size:0.85rem; margin:4px 0; color:var(--dabelle-blue);">${item.prod}</h2>
-                <input type="tel" class="db-price" placeholder="R$ 0,00" data-name="${item.prod}" oninput="m(this)">
-                <div class="comp-box">
+                <h2 style="font-size:1rem; margin:8px 0;">${item.prod}</h2>
+                <input type="tel" class="db-price" placeholder="R$ 0,00" data-name="${item.prod}" oninput="m(this); updateProg()">
+                <div style="background:#F9F9FB; border-radius:15px; padding:15px; margin-top:10px;">
                     ${item.comps.map(c => `
-                        <div class="comp-row"><span style="font-size:0.75rem;">${c}</span><input type="tel" class="comp-price" placeholder="0,00" oninput="m(this)"></div>
+                        <div class="comp-item">
+                            <span style="font-size:0.85rem; color:#636366;">${c}</span>
+                            <input type="tel" class="comp-price" placeholder="0,00" oninput="m(this)">
+                        </div>
                     `).join('')}
                 </div>
             </div>
@@ -202,39 +313,38 @@
         i.value = (parseFloat(v)/100).toLocaleString('pt-BR', {minimumFractionDigits:2});
     }
 
+    function updateProg() {
+        const filled = Array.from(document.querySelectorAll('.db-price')).filter(i => i.value !== "").length;
+        document.getElementById('progress-text').innerText = `${filled} de ${dbSchema.length} itens`;
+    }
+
     function switchTab(t) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
         document.getElementById(`view-${t}`).classList.add('active');
         document.getElementById(`tab-${t}`).classList.add('active');
-        document.getElementById('footer-save').style.display = (t === 'collect') ? 'block' : 'none';
+        document.getElementById('footer-save').style.display = (t === 'collect') ? 'flex' : 'none';
         if(t === 'dash') renderDashboard();
     }
 
     function saveVisit() {
         const store = document.getElementById('store-name').value;
-        if(!store) return alert("Preencha o nome da loja!");
-
-        const prices = [];
-        document.querySelectorAll('.db-price').forEach(input => {
-            if(input.value) prices.push({ prod: input.dataset.name, price: input.value });
-        });
-
+        if(!store) return alert("Digite o nome da loja.");
+        
+        const prices = Array.from(document.querySelectorAll('.db-price')).map(i => ({ prod: i.dataset.name, price: i.value }));
         const visit = {
             store,
             bairro: document.getElementById('store-bairro').value,
-            cidade: document.getElementById('store-cidade').value,
-            uf: document.getElementById('store-uf').value,
             channel: document.getElementById('store-channel').value,
             date: new Date().toISOString().split('T')[0],
             displayDate: new Date().toLocaleDateString('pt-BR'),
-            prices
+            prices: prices.filter(p => p.price !== "")
         };
 
         const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
         db.push(visit);
         localStorage.setItem('dutyprice_db', JSON.stringify(db));
-        alert("Salvo!");
+        alert("Visita finalizada com sucesso!");
         location.reload();
     }
 
@@ -245,6 +355,7 @@
         const filtered = db.filter(v => v.date >= start && v.date <= end);
         
         document.getElementById('d-visitas').innerText = filtered.length;
+        
         let sum = 0, count = 0, canais = {};
         filtered.forEach(v => {
             canais[v.channel] = (canais[v.channel] || 0) + 1;
@@ -252,45 +363,45 @@
         });
 
         document.getElementById('d-media').innerText = `R$ ${(count > 0 ? sum/count : 0).toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
-        document.getElementById('history-log').innerHTML = filtered.slice().reverse().map(h => `
-            <div style="padding:8px 0; border-bottom:0.5px solid #eee;">
-                <b>${h.store}</b> (${h.bairro || 'Sem Bairro'})<br><small>${h.channel} • ${h.displayDate}</small>
+        
+        document.getElementById('history-log').innerHTML = filtered.slice(-5).reverse().map(h => `
+            <div class="history-item">
+                <div class="icon-circle">🛒</div>
+                <div style="flex:1">
+                    <div style="font-weight:700; font-size:0.95rem;">${h.store}</div>
+                    <div style="font-size:0.75rem; color:#8E8E93;">${h.bairro} • ${h.channel}</div>
+                </div>
+                <div style="font-size:0.7rem; color:#8E8E93;">${h.displayDate}</div>
             </div>
-        `).join('') || "Sem registros.";
+        `).join('') || "Sem registros no período.";
 
         if(myChart) myChart.destroy();
         const ctx = document.getElementById('chartCanal').getContext('2d');
         myChart = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: Object.keys(canais), datasets: [{ data: Object.values(canais), backgroundColor: ['#002D58','#C5A059','#004586','#F4E8D1'] }] },
-            options: { plugins: { legend: { position:'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            data: { labels: Object.keys(canais), datasets: [{ data: Object.values(canais), backgroundColor: ['#051937','#C5A059','#004d7a','#F2F2F7'] }] },
+            options: { 
+                maintainAspectRatio: false,
+                plugins: { legend: { position:'right', labels: { boxWidth: 15, font: { weight: 'bold' } } } }
+            }
         });
     }
 
     function exportPDF() {
         const element = document.getElementById('pdf-area');
-        html2pdf().set({ margin:10, filename:'DutyPrice_Relatorio.pdf', html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4'} }).from(element).save();
+        html2pdf().set({ margin:10, filename:'DutyPrice_BI.pdf', html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4'} }).from(element).save();
     }
 
     function shareWA(type) {
         const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
         if(db.length === 0) return alert("Sem dados.");
-        let text = "";
-
-        if(type === 'loja') {
-            const l = db[db.length - 1];
-            text = `*DUTYPRICE - RELATÓRIO LOJA*\n\n🏪 *Loja:* ${l.store}\n📍 *Local:* ${l.bairro || 'N/A'}, ${l.cidade}-${l.uf}\n🏢 *Canal:* ${l.channel}\n📅 *Data:* ${l.displayDate}\n\n*PREÇOS DABELLE:*\n`;
-            l.prices.forEach(p => text += `• ${p.prod}: R$ ${p.price}\n`);
-        } else {
-            const start = document.getElementById('date-start').value;
-            const filtered = db.filter(v => v.date >= start);
-            text = `*DUTYPRICE - RESUMO PERÍODO*\n📅 Início: ${start}\n📊 *Lojas:* ${filtered.length}\n\n`;
-            filtered.forEach(v => text += `✅ ${v.store} (${v.bairro || 'N/A'})\n`);
-        }
+        const l = db[db.length - 1];
+        let text = `*DUTYPRICE BI - RELATÓRIO*\n\n🏪 *Loja:* ${l.store}\n📍 *Bairro:* ${l.bairro}\n🏢 *Canal:* ${l.channel}\n\n*PREÇOS DABELLE:*\n`;
+        l.prices.forEach(p => text += `• ${p.prod}: R$ ${p.price}\n`);
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
 
-    function clearAll() { if(confirm("Apagar histórico?")) { localStorage.removeItem('dutyprice_db'); location.reload(); } }
+    function clearAll() { if(confirm("Deseja apagar permanentemente toda a inteligência coletada?")) { localStorage.removeItem('dutyprice_db'); location.reload(); } }
     window.onload = init;
 </script>
 </body>
