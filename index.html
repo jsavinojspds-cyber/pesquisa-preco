@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v3.3</title>
+    <title>PriceScout v3.4</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
@@ -33,58 +33,71 @@
     </style>
 </head>
 <body>
-    <header><div class="logo">PriceScout<span class="v-tag">v3.3</span></div></header>
+    <header><div class="logo">PriceScout<span class="v-tag">v3.4</span></div></header>
+    
     <div id="app">
         <div class="card">
-            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔒 COLOQUE SUA CHAVE PRÓPRIA</label>
-            <input type="password" id="api-key" placeholder="Insira a Gemini Key aqui" oninput="validate()">
+            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔒 COLE A CHAVE DO PRINT AQUI</label>
+            <input type="password" id="api-key" placeholder="Cole o código AIza... aqui" oninput="validate()">
         </div>
+
         <img id="preview">
+
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('camera')">📸 Foto</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('camera')">📸 Câmera</button>
                 <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('file')">📁 Galeria</button>
             </div>
             <input type="file" id="media" hidden accept="image/*">
         </div>
+
         <div id="loader">
-            <small id="status" style="color:var(--accent)">Processando...</small>
+            <small id="status" style="color:var(--accent)">IA analisando preços...</small>
             <div class="p-bar"><div class="p-fill"></div></div>
         </div>
+
         <div id="results"></div>
+
         <button class="btn" id="go" style="display:none; margin-top:15px;" onclick="run()" disabled>Analisar Gôndola</button>
+        <button class="btn" id="share-wa" style="display:none; margin-top:10px; background:#25d366; color:#000;" onclick="shareWA()">📲 Mandar p/ WhatsApp</button>
     </div>
+
     <nav>
         <a href="#" class="nav-item active"><span>📷</span>Captura</a>
-        <a href="#" class="nav-item"><span>📊</span>Dash</a>
+        <a href="#" class="nav-item"><span>📊</span>Mercado</a>
         <a href="#" class="nav-item"><span>📜</span>Histórico</a>
     </nav>
 
     <script>
         let imgBase64 = null;
+        let listaProdutos = [];
+
         window.onload = () => {
-            const saved = localStorage.getItem('ps_key_v33');
+            const saved = localStorage.getItem('ps_key_v34');
             if(saved) { document.getElementById('api-key').value = saved; validate(); }
         };
+
         function validate() {
             const val = document.getElementById('api-key').value.trim();
             const label = document.getElementById('key-label');
             const btn = document.getElementById('go');
-            if(val.length > 35) {
+            if(val.length > 30) {
                 label.innerText = "🔓 CHAVE PRONTA"; label.style.color = "#00ff00";
-                localStorage.setItem('ps_key_v33', val);
+                localStorage.setItem('ps_key_v34', val);
                 if(imgBase64) btn.disabled = false;
             } else {
-                label.innerText = "🔒 COLOQUE SUA CHAVE PRÓPRIA"; label.style.color = "#ff4444";
+                label.innerText = "🔒 COLE A CHAVE DO PRINT AQUI"; label.style.color = "#ff4444";
                 btn.disabled = true;
             }
         }
+
         function pick(mode) {
             const input = document.getElementById('media');
             if(mode === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
+
         document.getElementById('media').onchange = e => {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
@@ -105,31 +118,47 @@
             };
             reader.readAsDataURL(file);
         };
+
         async function run() {
             const key = document.getElementById('api-key').value.trim();
             const btn = document.getElementById('go');
             const loader = document.getElementById('loader');
             loader.style.display = 'block'; btn.disabled = true;
+            
             const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos e seus preços individuais. Marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
+            
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgBase64}}]}] })
                 });
                 const data = await res.json();
                 if(data.error) throw new Error(data.error.message);
+                
                 let txt = data.candidates[0].content.parts[0].text;
                 const match = txt.match(/\{[\s\S]*\}/);
                 const json = JSON.parse(match[0]);
+                listaProdutos = json.produtos;
+
                 const area = document.getElementById('results');
-                area.innerHTML = `<h3 style="margin:15px 0 10px 0; font-size:16px;">Resultados:</h3>`;
+                area.innerHTML = `<h3 style="margin:15px 0 10px 0; font-size:16px;">Resultados da Gôndola:</h3>`;
+                
                 json.produtos.forEach(p => {
                     area.innerHTML += `<div class="prod-item"><div class="prod-info"><div class="prod-brand">${p.marca}</div><div class="prod-name">${p.item}</div></div><div class="prod-price">R$ ${p.preco.toFixed(2)}</div></div>`;
                 });
+                
                 btn.style.display = 'none';
-            } catch (err) { alert("ERRO: " + err.message + "\n\nVerifique se sua chave no Google AI Studio está ativa."); btn.disabled = false; }
+                document.getElementById('share-wa').style.display = 'flex';
+            } catch (err) { alert("ERRO: " + err.message); btn.disabled = false; }
             loader.style.display = 'none';
+        }
+
+        function shareWA() {
+            let texto = "*PriceScout - Pesquisa de Preços*\n\n";
+            listaProdutos.forEach(p => {
+                texto += `• ${p.marca} ${p.item}: R$ ${p.preco.toFixed(2)}\n`;
+            });
+            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`);
         }
     </script>
 </body>
