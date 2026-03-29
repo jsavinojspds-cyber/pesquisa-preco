@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>DutyPrice 1.5v</title>
+    <title>DutyPrice 1.6v</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -18,69 +18,90 @@
             --white: #FFFFFF;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: -apple-system, system-ui, sans-serif; 
+        }
 
         body {
             background-color: var(--ios-bg);
             margin: 0;
             padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
             color: #1C1C1E;
+            overflow-x: hidden; /* Evita scroll lateral */
         }
 
         header {
-            background: var(--dabelle-blue); color: white; padding: 18px; 
+            background: var(--dabelle-blue); color: white; padding: 15px; 
             text-align: center; position: relative;
         }
 
         .version-tag { 
             font-size: 0.6rem; background: rgba(255,255,255,0.15); 
-            padding: 3px 10px; border-radius: 20px; position: absolute; top: 18px; right: 20px; 
+            padding: 2px 8px; border-radius: 20px; position: absolute; top: 10px; right: 10px; 
         }
 
         nav { display: flex; background: var(--white); border-bottom: 0.5px solid #C6C6C8; position: sticky; top: 0; z-index: 100; }
-        nav button { flex: 1; padding: 16px; border: none; background: none; font-weight: 600; color: #8E8E93; font-size: 0.95rem; }
+        nav button { flex: 1; padding: 14px; border: none; background: none; font-weight: 600; color: #8E8E93; font-size: 0.9rem; }
         nav button.active { color: var(--dabelle-blue); border-bottom: 3px solid var(--dabelle-gold); }
 
-        .view { display: none; padding: 20px; padding-bottom: 180px; }
+        .view { display: none; padding: 15px; padding-bottom: 180px; width: 100%; }
         .view.active { display: block; }
 
-        .card { background: var(--white); border-radius: 22px; padding: 20px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card { 
+            background: var(--white); 
+            border-radius: 20px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            width: 100%;
+        }
         
-        label { font-size: 0.7rem; font-weight: 700; color: #8E8E93; margin-bottom: 4px; display: block; text-transform: uppercase; }
+        label { font-size: 0.65rem; font-weight: 700; color: #8E8E93; margin-bottom: 4px; display: block; text-transform: uppercase; }
         
         input, select {
-            width: 100%; height: 50px; border-radius: 12px; border: 1.5px solid #E5E5EA;
-            padding: 0 15px; font-size: 1rem; margin-bottom: 12px; background: #F9F9FB; font-weight: 600;
+            width: 100%; height: 48px; border-radius: 12px; border: 1px solid #E5E5EA;
+            padding: 0 12px; font-size: 1rem; margin-bottom: 10px; background: #F9F9FB; font-weight: 600;
         }
 
-        .row { display: flex; gap: 10px; }
-        .row div { flex: 1; }
+        /* AJUSTE DO LAYOUT QUE ESTAVA SAINDO */
+        .flex-row { 
+            display: flex; 
+            gap: 10px; 
+            width: 100%; 
+            margin-bottom: 10px;
+            flex-wrap: nowrap; /* Garante que fiquem lado a lado */
+        }
+        .flex-row > div { flex: 1; min-width: 0; } /* min-width evita quebra de layout */
 
-        .comp-box { background: #F2F2F7; border-radius: 16px; padding: 12px; margin-top: 10px; }
-        .comp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .comp-input { width: 100px !important; height: 40px !important; margin-bottom: 0 !important; text-align: right; }
+        .comp-box { background: #F2F2F7; border-radius: 14px; padding: 10px; margin-top: 10px; }
+        .comp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 10px; }
+        .comp-input { width: 90px !important; height: 38px !important; margin-bottom: 0 !important; text-align: right; font-size: 0.9rem !important; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--dabelle-blue); color: white; padding: 15px; border-radius: 18px; text-align: center; }
-        .stat-card b { display: block; font-size: 1.3rem; color: var(--dabelle-gold); }
+        .stats-grid { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
+        .stat-card { flex: 1; background: var(--dabelle-blue); color: white; padding: 12px; border-radius: 16px; text-align: center; }
+        .stat-card b { display: block; font-size: 1.2rem; color: var(--dabelle-gold); }
 
-        .btn-report { width: 100%; height: 54px; border-radius: 14px; border: none; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.95rem; }
+        .btn-report { width: 100%; height: 50px; border-radius: 12px; border: none; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
         .btn-pdf { background: #E5E5EA; color: #1C1C1E; }
         .btn-wa { background: #25D366; color: white; }
 
         .action-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 20px 25px calc(20px + env(safe-area-inset-bottom));
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-top: 0.5px solid #C6C6C8; z-index: 1000;
+            padding: 15px 20px calc(15px + env(safe-area-inset-bottom));
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); border-top: 0.5px solid #C6C6C8; z-index: 1000;
         }
-        .btn-save { width: 100%; height: 60px; background: var(--dabelle-blue); color: white; border: none; border-radius: 18px; font-size: 1.1rem; font-weight: 700; }
+        .btn-save { width: 100%; height: 56px; background: var(--dabelle-blue); color: white; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 700; box-shadow: 0 4px 15px rgba(0,45,88,0.2); }
+
+        #chartCanal { max-height: 200px; width: 100% !important; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>DutyPrice</h1>
-    <span class="version-tag">1.5v</span>
+    <span class="version-tag">1.6v</span>
 </header>
 
 <nav>
@@ -93,30 +114,20 @@
         <label>Nome da Loja</label>
         <input type="text" id="store-name" placeholder="Ex: Atacadão Torquato">
         
-        <div class="row">
-            <div>
-                <label>Bairro</label>
-                <input type="text" id="store-bairro" placeholder="Ex: Adrianópolis">
-            </div>
-            <div>
-                <label>Cidade</label>
-                <input type="text" id="store-cidade" value="Manaus">
-            </div>
+        <div class="flex-row">
+            <div><label>Bairro</label><input type="text" id="store-bairro" placeholder="Adrianópolis"></div>
+            <div><label>Cidade</label><input type="text" id="store-cidade" value="Manaus"></div>
         </div>
         
-        <div class="row">
-            <div style="flex: 0.4;">
-                <label>UF</label>
-                <input type="text" id="store-uf" value="AM" maxlength="2">
-            </div>
-            <div style="flex: 1;">
-                <label>Canal</label>
+        <div class="flex-row">
+            <div style="flex: 0.3;"><label>UF</label><input type="text" id="store-uf" value="AM" maxlength="2"></div>
+            <div style="flex: 1;"><label>Canal</label>
                 <select id="store-channel">
                     <option value="C&C">C&C (Atacarejo)</option>
                     <option value="Tradicional">Tradicional</option>
-                    <option value="1-4 ckt">1-4 Checkouts</option>
-                    <option value="5-9 ckt">5-9 Checkouts</option>
-                    <option value="10+ ckt">10+ Checkouts</option>
+                    <option value="1-4 ckt">1-4 ckt</option>
+                    <option value="5-9 ckt">5-9 ckt</option>
+                    <option value="10+ ckt">10+ ckt</option>
                 </select>
             </div>
         </div>
@@ -126,7 +137,7 @@
 
 <div id="view-dash" class="view">
     <div class="card" id="pdf-area">
-        <div class="row" style="margin-bottom:15px;">
+        <div class="flex-row">
             <div><label>Início</label><input type="date" id="date-start" onchange="renderDashboard()"></div>
             <div><label>Fim</label><input type="date" id="date-end" onchange="renderDashboard()"></div>
         </div>
@@ -136,16 +147,16 @@
             <div class="stat-card">Média DaBelle<b id="d-media">R$ 0,00</b></div>
         </div>
         
-        <canvas id="chartCanal" height="180"></canvas>
-        <div id="history-log" style="margin-top:15px; font-size:0.85rem;"></div>
+        <canvas id="chartCanal"></canvas>
+        <div id="history-log" style="margin-top:15px; font-size:0.8rem; border-top: 1px solid #eee; padding-top:10px;"></div>
     </div>
 
     <div class="card">
-        <button class="btn-report btn-pdf" onclick="exportPDF()">📄 PDF do Período</button>
-        <button class="btn-report btn-wa" onclick="shareWA('periodo')">💬 Resumo Período (WhatsApp)</button>
-        <button class="btn-report btn-wa" style="background:#128C7E" onclick="shareWA('loja')">💬 Última Loja Detalhado</button>
+        <button class="btn-report btn-pdf" onclick="exportPDF()">📄 Relatório PDF</button>
+        <button class="btn-report btn-wa" onclick="shareWA('periodo')">💬 Resumo WhatsApp</button>
+        <button class="btn-report btn-wa" style="background:#128C7E" onclick="shareWA('loja')">💬 Última Loja WhatsApp</button>
     </div>
-    <button onclick="clearAll()" style="color:red; width:100%; border:none; background:none; padding:10px; font-size:0.7rem;">LIMPAR TUDO</button>
+    <button onclick="clearAll()" style="color:red; width:100%; border:none; background:none; padding:10px; font-size:0.7rem; font-weight:bold;">APAGAR HISTÓRICO</button>
 </div>
 
 <div class="action-bar" id="footer-save">
@@ -170,11 +181,11 @@
         container.innerHTML = dbSchema.map((item, idx) => `
             <div class="card">
                 <small style="color:var(--dabelle-gold); font-weight:800;">${item.cat}</small>
-                <h2 style="font-size:0.9rem; margin:5px 0; color:var(--dabelle-blue);">${item.prod}</h2>
+                <h2 style="font-size:0.85rem; margin:4px 0; color:var(--dabelle-blue);">${item.prod}</h2>
                 <input type="tel" class="db-price" placeholder="R$ 0,00" data-name="${item.prod}" oninput="m(this)">
                 <div class="comp-box">
                     ${item.comps.map(c => `
-                        <div class="comp-row"><span style="font-size:0.8rem;">${c}</span><input type="tel" class="comp-price" placeholder="0,00" oninput="m(this)"></div>
+                        <div class="comp-row"><span style="font-size:0.75rem;">${c}</span><input type="tel" class="comp-price" placeholder="0,00" oninput="m(this)"></div>
                     `).join('')}
                 </div>
             </div>
@@ -202,7 +213,7 @@
 
     function saveVisit() {
         const store = document.getElementById('store-name').value;
-        if(!store) return alert("Nome da loja vazio!");
+        if(!store) return alert("Preencha o nome da loja!");
 
         const prices = [];
         document.querySelectorAll('.db-price').forEach(input => {
@@ -223,7 +234,7 @@
         const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
         db.push(visit);
         localStorage.setItem('dutyprice_db', JSON.stringify(db));
-        alert("Visita Salva!");
+        alert("Salvo!");
         location.reload();
     }
 
@@ -242,17 +253,17 @@
 
         document.getElementById('d-media').innerText = `R$ ${(count > 0 ? sum/count : 0).toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
         document.getElementById('history-log').innerHTML = filtered.slice().reverse().map(h => `
-            <div style="padding:10px 0; border-bottom:0.5px solid #eee;">
-                <b>${h.store}</b> (${h.bairro})<br><small>${h.channel} • ${h.displayDate}</small>
+            <div style="padding:8px 0; border-bottom:0.5px solid #eee;">
+                <b>${h.store}</b> (${h.bairro || 'Sem Bairro'})<br><small>${h.channel} • ${h.displayDate}</small>
             </div>
-        `).join('');
+        `).join('') || "Sem registros.";
 
         if(myChart) myChart.destroy();
         const ctx = document.getElementById('chartCanal').getContext('2d');
         myChart = new Chart(ctx, {
             type: 'doughnut',
             data: { labels: Object.keys(canais), datasets: [{ data: Object.values(canais), backgroundColor: ['#002D58','#C5A059','#004586','#F4E8D1'] }] },
-            options: { plugins: { legend: { position:'bottom' } } }
+            options: { plugins: { legend: { position:'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
         });
     }
 
@@ -268,13 +279,13 @@
 
         if(type === 'loja') {
             const l = db[db.length - 1];
-            text = `*DUTYPRICE - RELATÓRIO LOJA*\n\n🏪 *Loja:* ${l.store}\n📍 *Local:* ${l.bairro}, ${l.cidade}-${l.uf}\n🏢 *Canal:* ${l.channel}\n📅 *Data:* ${l.displayDate}\n\n*PREÇOS DABELLE:*\n`;
+            text = `*DUTYPRICE - RELATÓRIO LOJA*\n\n🏪 *Loja:* ${l.store}\n📍 *Local:* ${l.bairro || 'N/A'}, ${l.cidade}-${l.uf}\n🏢 *Canal:* ${l.channel}\n📅 *Data:* ${l.displayDate}\n\n*PREÇOS DABELLE:*\n`;
             l.prices.forEach(p => text += `• ${p.prod}: R$ ${p.price}\n`);
         } else {
             const start = document.getElementById('date-start').value;
             const filtered = db.filter(v => v.date >= start);
             text = `*DUTYPRICE - RESUMO PERÍODO*\n📅 Início: ${start}\n📊 *Lojas:* ${filtered.length}\n\n`;
-            filtered.forEach(v => text += `✅ ${v.store} (${v.bairro})\n`);
+            filtered.forEach(v => text += `✅ ${v.store} (${v.bairro || 'N/A'})\n`);
         }
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
