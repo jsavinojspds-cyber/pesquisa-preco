@@ -3,60 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v3.2</title>
+    <title>PriceScout v3.3</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
-    
     <style>
         :root { --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #fff; --border: #2e2e42; }
         body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 20px 16px 120px 16px; box-sizing: border-box; }
-        
         header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .logo { font-weight: 800; font-size: 22px; color: var(--accent); }
         .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; color: #aaa; }
-
         .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
         .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; }
         .btn:disabled { background: #222; color: #555; }
-        
         input { background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
-
         #preview { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; border: 2px solid var(--border); }
-        
         #loader { display: none; text-align: center; margin: 20px 0; }
         .p-bar { height: 4px; background: var(--border); overflow: hidden; border-radius: 2px; margin-top: 8px; }
         .p-fill { height: 100%; background: var(--accent); width: 30%; animation: load 1.2s infinite ease-in-out; }
         @keyframes load { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
-
-        .prod-item { 
-            background: #1f1f2e; padding: 14px; border-radius: 12px; margin-bottom: 8px; 
-            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
-        }
+        .prod-item { background: #1f1f2e; padding: 14px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); }
         .prod-info { flex: 1; padding-right: 10px; }
         .prod-name { font-weight: 700; font-size: 14px; }
         .prod-brand { font-size: 10px; color: var(--accent); text-transform: uppercase; font-weight: bold; }
         .prod-price { font-weight: 800; font-size: 19px; }
-
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 25px; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #444; font-size: 11px; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
-
-    <header>
-        <div class="logo">PriceScout<span class="v-tag">v3.2 Fix</span></div>
-    </header>
-
+    <header><div class="logo">PriceScout<span class="v-tag">v3.3</span></div></header>
     <div id="app">
         <div class="card">
-            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔒 CHAVE NÃO IDENTIFICADA</label>
+            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔒 COLOQUE SUA CHAVE PRÓPRIA</label>
             <input type="password" id="api-key" placeholder="Insira a Gemini Key aqui" oninput="validate()">
         </div>
-
         <img id="preview">
-
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                 <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('camera')">📸 Foto</button>
@@ -64,18 +47,13 @@
             </div>
             <input type="file" id="media" hidden accept="image/*">
         </div>
-
         <div id="loader">
-            <small id="status" style="color:var(--accent)">Analisando preços...</small>
+            <small id="status" style="color:var(--accent)">Processando...</small>
             <div class="p-bar"><div class="p-fill"></div></div>
         </div>
-
         <div id="results"></div>
-
         <button class="btn" id="go" style="display:none; margin-top:15px;" onclick="run()" disabled>Analisar Gôndola</button>
-        <button class="btn" id="reset" style="display:none; margin-top:10px; background:#222; color:#aaa;" onclick="location.reload()">Nova Foto</button>
     </div>
-
     <nav>
         <a href="#" class="nav-item active"><span>📷</span>Captura</a>
         <a href="#" class="nav-item"><span>📊</span>Dash</a>
@@ -84,54 +62,40 @@
 
     <script>
         let imgBase64 = null;
-
         window.onload = () => {
-            const saved = localStorage.getItem('ps_key_v32');
-            if(saved) {
-                document.getElementById('api-key').value = saved;
-                validate();
-            }
+            const saved = localStorage.getItem('ps_key_v33');
+            if(saved) { document.getElementById('api-key').value = saved; validate(); }
         };
-
         function validate() {
             const val = document.getElementById('api-key').value.trim();
             const label = document.getElementById('key-label');
             const btn = document.getElementById('go');
-            
-            if(val.length > 30) {
-                label.innerText = "🔓 CHAVE PRONTA";
-                label.style.color = "#00ff00";
-                localStorage.setItem('ps_key_v32', val);
+            if(val.length > 35) {
+                label.innerText = "🔓 CHAVE PRONTA"; label.style.color = "#00ff00";
+                localStorage.setItem('ps_key_v33', val);
                 if(imgBase64) btn.disabled = false;
             } else {
-                label.innerText = "🔒 CHAVE NÃO IDENTIFICADA";
-                label.style.color = "#ff4444";
+                label.innerText = "🔒 COLOQUE SUA CHAVE PRÓPRIA"; label.style.color = "#ff4444";
                 btn.disabled = true;
             }
         }
-
         function pick(mode) {
             const input = document.getElementById('media');
             if(mode === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
-
         document.getElementById('media').onchange = e => {
-            const file = e.target.files[0];
-            if(!file) return;
+            const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                const img = new Image();
-                img.src = ev.target.result;
+                const img = new Image(); img.src = ev.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX = 1200;
-                    let w = img.width, h = img.height;
+                    const MAX = 1200; let w = img.width, h = img.height;
                     if(w > MAX) { h *= MAX/w; w = MAX; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    
                     imgBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
                     document.getElementById('preview').src = canvas.toDataURL('image/jpeg');
                     document.getElementById('preview').style.display = 'block';
@@ -141,53 +105,30 @@
             };
             reader.readAsDataURL(file);
         };
-
         async function run() {
             const key = document.getElementById('api-key').value.trim();
             const btn = document.getElementById('go');
             const loader = document.getElementById('loader');
-            
-            loader.style.display = 'block';
-            btn.disabled = true;
-
+            loader.style.display = 'block'; btn.disabled = true;
             const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos e seus preços individuais. Marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
-
             try {
-                // Endpoint corrigido com trim na chave
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgBase64}}]}] })
                 });
-
                 const data = await res.json();
-                
                 if(data.error) throw new Error(data.error.message);
-
                 let txt = data.candidates[0].content.parts[0].text;
                 const match = txt.match(/\{[\s\S]*\}/);
                 const json = JSON.parse(match[0]);
-                
                 const area = document.getElementById('results');
                 area.innerHTML = `<h3 style="margin:15px 0 10px 0; font-size:16px;">Resultados:</h3>`;
-                
                 json.produtos.forEach(p => {
-                    area.innerHTML += `
-                        <div class="prod-item">
-                            <div class="prod-info">
-                                <div class="prod-brand">${p.marca}</div>
-                                <div class="prod-name">${p.item}</div>
-                            </div>
-                            <div class="prod-price">R$ ${p.preco.toFixed(2)}</div>
-                        </div>`;
+                    area.innerHTML += `<div class="prod-item"><div class="prod-info"><div class="prod-brand">${p.marca}</div><div class="prod-name">${p.item}</div></div><div class="prod-price">R$ ${p.preco.toFixed(2)}</div></div>`;
                 });
                 btn.style.display = 'none';
-                document.getElementById('reset').style.display = 'flex';
-
-            } catch (err) {
-                alert("Verifique se sua chave está correta. Erro: " + err.message);
-                btn.disabled = false;
-            }
+            } catch (err) { alert("ERRO: " + err.message + "\n\nVerifique se sua chave no Google AI Studio está ativa."); btn.disabled = false; }
             loader.style.display = 'none';
         }
     </script>
