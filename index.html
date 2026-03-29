@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceScout v4.3 Ultra</title>
+    <title>PriceScout v4.4 Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -21,10 +21,10 @@
     <header class="mb-6">
         <div class="flex justify-center items-center gap-2 mb-4">
             <h1 class="text-2xl font-bold accent-cyan">PriceScout</h1>
-            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.3 ULTRA</span>
+            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.4 ULTRA</span>
         </div>
         
-        <div class="card p-4 shadow-2xl">
+        <div class="card p-4">
             <div class="flex justify-between items-center mb-2 text-[10px] uppercase font-black tracking-tighter text-gray-500">
                 <span>Gemini API Key</span>
                 <div id="apiStatus" class="flex items-center gap-2">
@@ -60,14 +60,16 @@
 
         <div id="loading" class="hidden flex flex-col items-center py-10">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-800 h-10 w-10 mb-4"></div>
-            <p class="accent-cyan animate-pulse text-xs font-black uppercase tracking-widest">Processando em Manaus...</p>
+            <p class="accent-cyan animate-pulse text-xs font-black uppercase tracking-widest text-center">
+                Analisando gôndola...<br><span class="text-[10px] opacity-60">Otimizado para 4G Manaus</span>
+            </p>
         </div>
 
-        <div id="resultsContainer" class="hidden space-y-4 animate-in fade-in duration-500">
+        <div id="resultsContainer" class="hidden space-y-4">
             <div class="flex justify-between items-center px-1">
-                <h2 class="text-[10px] font-black uppercase tracking-tighter text-gray-500">Produtos Identificados</h2>
+                <h2 class="text-[10px] font-black uppercase tracking-tighter text-gray-500 text-xs">Itens Extraídos</h2>
                 <button onclick="copyToWhatsApp()" class="text-[10px] bg-green-600 text-white px-5 py-2 rounded-full font-black uppercase">
-                    Mandar WhatsApp
+                    WhatsApp
                 </button>
             </div>
             <div id="resultsList" class="card divide-y divide-gray-800 overflow-hidden"></div>
@@ -80,41 +82,35 @@
         let compressedImageBase64 = null;
         let isApiValid = false;
 
-        // Nova verificação ativa: Tenta uma micro-geração de texto
+        // Versão 4.4: Corrigido o endpoint para evitar o erro "not found"
         async function checkApi() {
             const key = document.getElementById('apiKey').value.trim();
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
             
             if (!key) return;
-
             text.innerText = "Testando...";
             
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "oi" }] }] })
-                });
-                
+                // Usando o endpoint genérico de listagem para validar a chave sem erro de modelo
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
                 const data = await res.json();
 
-                if (res.ok && data.candidates) {
+                if (res.ok) {
                     isApiValid = true;
                     dot.className = "status-dot bg-green-500 shadow-[0_0_10px_#00e5ff]";
                     text.innerText = "Chave Ativa";
                     text.style.color = "#00e5ff";
                     updateAnalyzeButton();
                 } else {
-                    const errorMsg = data.error?.message || "Erro desconhecido";
-                    throw new Error(errorMsg);
+                    throw new Error(data.error?.message || "Chave Inválida");
                 }
             } catch (e) {
                 isApiValid = false;
                 dot.className = "status-dot bg-red-500 shadow-[0_0_10px_#ef4444]";
                 text.innerText = "Erro";
                 text.style.color = "#ef4444";
-                alert("Erro na API: " + e.message);
+                alert("Erro: " + e.message);
             }
         }
 
@@ -122,7 +118,7 @@
             const btn = document.getElementById('analyzeBtn');
             if (isApiValid && compressedImageBase64) {
                 btn.disabled = false;
-                btn.className = "w-full bg-[#00e5ff] text-black font-black py-5 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,229,255,0.3)] uppercase tracking-widest cursor-pointer";
+                btn.className = "w-full bg-[#00e5ff] text-black font-black py-5 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,229,255,0.3)] uppercase tracking-widest";
                 btn.style.opacity = "1";
             }
         }
@@ -131,7 +127,7 @@
             const file = e.target.files[0];
             if (!file) return;
             
-            document.getElementById('fileName').innerText = "SELECIONADO: " + file.name.toUpperCase();
+            document.getElementById('fileName').innerText = "FOTO CARREGADA";
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
@@ -164,10 +160,13 @@
             resultsContainer.classList.add('hidden');
             document.getElementById('analyzeBtn').disabled = true;
 
+            // Endpoint corrigido para a v1beta
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+
             const payload = {
                 contents: [{
                     parts: [
-                        { text: "Extraia apenas Marca, Item e Preço: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato: [Marca] [Item] - R$ [Preço]. Ignore promoções 'leve 3 pague 2' ou kits." },
+                        { text: "Aja como um scanner de preços. Extraia: Marca, Item e Preço: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato: [Marca] [Item] - R$ [Preço]. Ignore promoções ou kits." },
                         { inline_data: { mime_type: "image/jpeg", data: compressedImageBase64 } }
                     ]
                 }],
@@ -181,14 +180,14 @@
             };
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 const data = await response.json();
-                if(!data.candidates) throw new Error("Sem resposta do modelo.");
+                if(!data.candidates) throw new Error(data.error?.message || "Erro na análise.");
                 
                 const text = data.candidates[0].content.parts[0].text;
                 const list = document.getElementById('resultsList');
@@ -198,7 +197,7 @@
 
                 resultsContainer.classList.remove('hidden');
             } catch (error) {
-                alert('Erro na extração: ' + error.message);
+                alert('Erro: ' + error.message);
             } finally {
                 loading.classList.add('hidden');
                 document.getElementById('analyzeBtn').disabled = false;
@@ -207,7 +206,7 @@
 
         function copyToWhatsApp() {
             const items = Array.from(document.querySelectorAll('#resultsList div')).map(d => d.innerText).join('\n');
-            window.open(`https://wa.me/?text=${encodeURIComponent("*PRICESCOUT v4.3*\n\n" + items)}`, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent("*PRICESCOUT v4.4*\n\n" + items)}`, '_blank');
         }
     </script>
 </body>
