@@ -3,38 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceScout v4.0 Ultra</title>
+    <title>PriceScout v4.1 Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #0a0a0f; color: #e2e8f0; font-family: -apple-system, system-ui, sans-serif; }
         .accent-cyan { color: #00e5ff; }
         .bg-cyan { background-color: #00e5ff; }
-        .border-cyan { border-color: #00e5ff; }
         .card { background: #16161e; border: 1px solid #27272a; border-radius: 12px; }
         .loader { border-top-color: #00e5ff; animation: spinner 0.6s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        input:focus { outline: none; border-color: #00e5ff; box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2); }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; transition: all 0.3s; }
+        input:focus { outline: none; border-color: #00e5ff; }
     </style>
 </head>
 <body class="p-4 pb-20">
 
     <header class="mb-6">
-        <h1 class="text-2xl font-bold accent-cyan mb-4 text-center">PriceScout <span class="text-xs border border-cyan px-2 py-0.5 rounded">v4.0 ULTRA</span></h1>
+        <div class="flex justify-center items-center gap-2 mb-4">
+            <h1 class="text-2xl font-bold accent-cyan">PriceScout</h1>
+            <span class="bg-cyan text-black text-[10px] font-black px-2 py-1 rounded">v4.1 ULTRA</span>
+        </div>
+        
         <div class="card p-4">
-            <label class="block text-xs uppercase tracking-wider text-gray-400 mb-2">Gemini API Key</label>
-            <input type="password" id="apiKey" placeholder="Cole sua chave aqui..." 
-                class="w-full bg-black border border-gray-700 rounded-lg p-3 text-cyan-400 text-sm">
+            <div class="flex justify-between items-center mb-2 text-[10px] uppercase font-bold tracking-widest text-gray-500">
+                <span>Gemini API Key</span>
+                <div id="apiStatus" class="flex items-center gap-2">
+                    <span id="statusDot" class="status-dot bg-gray-700"></span>
+                    <span id="statusText">Não Verificada</span>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <input type="password" id="apiKey" placeholder="Insira sua chave..." 
+                    class="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-cyan-400 text-sm">
+                <button onclick="checkApi()" class="bg-gray-800 text-white px-3 rounded-lg text-[10px] font-bold active:bg-cyan active:text-black transition-colors">
+                    VERIFICAR
+                </button>
+            </div>
         </div>
     </header>
 
     <main class="space-y-4">
-        <div class="card p-6 text-center">
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+        <div class="card p-6 text-center border-dashed border-2 border-gray-800">
+            <input type="file" id="cameraInput" accept="image/*" class="hidden">
             <button onclick="document.getElementById('cameraInput').click()" 
-                class="w-full bg-cyan text-black font-bold py-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                <span>📷 TIRAR FOTO DA GÔNDOLA</span>
+                class="w-full bg-cyan text-black font-bold py-4 rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+                <span class="text-lg">📷 SELECIONAR FOTO</span>
+                <span class="text-[10px] opacity-70 uppercase">Câmera ou Galeria do iPhone</span>
             </button>
-            <p id="fileName" class="text-xs text-gray-500 mt-2 italic"></p>
+            <p id="fileName" class="text-xs text-gray-500 mt-2 italic truncate px-4"></p>
         </div>
 
         <button id="analyzeBtn" disabled onclick="analyzeImage()" 
@@ -44,47 +60,67 @@
 
         <div id="loading" class="hidden flex flex-col items-center py-8">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12 mb-4"></div>
-            <p class="accent-cyan animate-pulse">Processando imagem em Manaus...</p>
+            <p class="accent-cyan animate-pulse text-sm">Processando em Manaus...</p>
         </div>
 
         <div id="resultsContainer" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-semibold">Produtos Encontrados</h2>
-                <button onclick="copyToWhatsApp()" class="text-xs bg-green-600 text-white px-3 py-1 rounded-full font-bold">
-                    MANDAR WHATSAPP
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-lg font-semibold uppercase text-xs tracking-widest text-gray-400">Resultado da Análise</h2>
+                <button onclick="copyToWhatsApp()" class="text-[10px] bg-green-600 text-white px-4 py-2 rounded-full font-bold uppercase">
+                    WhatsApp
                 </button>
             </div>
-            <div id="resultsList" class="card overflow-hidden">
-                </div>
+            <div id="resultsList" class="card divide-y divide-gray-800"></div>
         </div>
     </main>
 
     <canvas id="canvas" class="hidden"></canvas>
 
     <script>
-        const apiKeyInput = document.getElementById('apiKey');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const cameraInput = document.getElementById('cameraInput');
         let compressedImageBase64 = null;
+        let isApiValid = false;
 
-        // Ativa botão se houver chave e imagem
-        const validateForm = () => {
-            if (apiKeyInput.value.length > 10 && compressedImageBase64) {
-                analyzeBtn.disabled = false;
-                analyzeBtn.classList.replace('bg-gray-800', 'bg-white');
-                analyzeBtn.classList.replace('text-gray-400', 'text-black');
-                analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        // Validação da API Key
+        async function checkApi() {
+            const key = document.getElementById('apiKey').value;
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (!key) { alert("Insira uma chave primeiro."); return; }
+
+            text.innerText = "Verificando...";
+            try {
+                // Chamada de teste leve para validar a chave
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash?key=${key}`);
+                if (res.ok) {
+                    isApiValid = true;
+                    dot.className = "status-dot bg-green-500 shadow-[0_0_8px_#22c55e]";
+                    text.innerText = "Chave Ativa";
+                    text.style.color = "#22c55e";
+                    updateAnalyzeButton();
+                } else { throw new Error(); }
+            } catch (e) {
+                isApiValid = false;
+                dot.className = "status-dot bg-red-500 shadow-[0_0_8px_#ef4444]";
+                text.innerText = "Erro na Chave";
+                text.style.color = "#ef4444";
             }
-        };
+        }
 
-        apiKeyInput.addEventListener('input', validateForm);
+        function updateAnalyzeButton() {
+            const btn = document.getElementById('analyzeBtn');
+            if (isApiValid && compressedImageBase64) {
+                btn.disabled = false;
+                btn.className = "w-full bg-white text-black font-bold py-4 rounded-xl transition-all active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.2)]";
+            }
+        }
 
-        // Processamento de Imagem (Otimizado para iPhone/Safari)
-        cameraInput.addEventListener('change', function(e) {
+        // Processamento de Imagem (Otimizado para Safari/iOS)
+        document.getElementById('cameraInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             
-            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('fileName').innerText = "Arquivo: " + file.name;
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
@@ -92,23 +128,19 @@
                     const canvas = document.getElementById('canvas');
                     let width = img.width;
                     let height = img.height;
-
-                    // Redimensiona para max 1000px (Foco em velocidade 4G)
                     const max_size = 1000;
-                    if (width > height) {
-                        if (width > max_size) { height *= max_size / width; width = max_size; }
-                    } else {
-                        if (height > max_size) { width *= max_size / height; height = max_size; }
-                    }
+
+                    if (width > height && width > max_size) { height *= max_size / width; width = max_size; }
+                    else if (height > max_size) { width *= max_size / height; height = max_size; }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Converte para JPEG com compressão de 0.7 para economizar dados
+                    // Compressão JPEG 0.7 para economizar dados no 4G de Manaus
                     compressedImageBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-                    validateForm();
+                    updateAnalyzeButton();
                 };
                 img.src = event.target.result;
             };
@@ -116,26 +148,18 @@
         });
 
         async function analyzeImage() {
-            const key = apiKeyInput.value;
+            const key = document.getElementById('apiKey').value;
             const loading = document.getElementById('loading');
             const resultsContainer = document.getElementById('resultsContainer');
-            const resultsList = document.getElementById('resultsList');
-
+            
             loading.classList.remove('hidden');
             resultsContainer.classList.add('hidden');
-            analyzeBtn.disabled = true;
-
-            const prompt = `Analise esta foto de gôndola. Extraia apenas produtos das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. 
-            Regras estritas: 
-            1. Ignore kits ou promoções do tipo 'Leve 3 Pague 2'. 
-            2. Formato: [Marca] [Nome Curto do Item] - R$ [Preço].
-            3. Se não encontrar o preço exato, ignore o item.
-            Retorne apenas a lista, um por linha.`;
+            document.getElementById('analyzeBtn').disabled = true;
 
             const payload = {
                 contents: [{
                     parts: [
-                        { text: prompt },
+                        { text: "Aja como um auditor de preços. Liste Marca, Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato rigoroso: [Marca] [Item] - R$ [Preço]. Ignore qualquer kit, promoção 'leve mais pague menos' ou itens sem preço visível." },
                         { inline_data: { mime_type: "image/jpeg", data: compressedImageBase64 } }
                     ]
                 }],
@@ -145,7 +169,7 @@
                     { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
                 ],
-                generationConfig: { temperature: 0.2, topP: 1, topK: 32 }
+                generationConfig: { temperature: 0.1 }
             };
 
             try {
@@ -158,32 +182,24 @@
                 const data = await response.json();
                 const text = data.candidates[0].content.parts[0].text;
                 
-                displayResults(text);
+                const list = document.getElementById('resultsList');
+                list.innerHTML = text.trim().split('\n').map(line => `
+                    <div class="p-4 text-sm font-medium border-b border-gray-800 last:border-0">${line}</div>
+                `).join('');
+
+                resultsContainer.classList.remove('hidden');
             } catch (error) {
-                alert('Erro na análise. Verifique sua chave ou conexão. ' + error.message);
+                alert('Erro na análise. Tente novamente.');
             } finally {
                 loading.classList.add('hidden');
-                analyzeBtn.disabled = false;
+                document.getElementById('analyzeBtn').disabled = false;
             }
         }
 
-        function displayResults(text) {
-            const resultsList = document.getElementById('resultsList');
-            const lines = text.trim().split('\n');
-            
-            resultsList.innerHTML = lines.map(line => `
-                <div class="border-b border-gray-800 p-4 last:border-0 hover:bg-gray-800/50">
-                    <p class="text-sm font-medium tracking-tight">${line}</p>
-                </div>
-            `).join('');
-
-            document.getElementById('resultsContainer').classList.remove('hidden');
-        }
-
         function copyToWhatsApp() {
-            const items = Array.from(document.querySelectorAll('#resultsList p')).map(p => p.innerText).join('\n');
-            const text = encodeURIComponent(`*PriceScout v4.0 Ultra - Relatório*\n\n${items}`);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
+            const items = Array.from(document.querySelectorAll('#resultsList div')).map(d => d.innerText).join('\n');
+            const msg = `*PRICESCOUT v4.1 - RELATÓRIO*\n\n${items}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
     </script>
 </body>
