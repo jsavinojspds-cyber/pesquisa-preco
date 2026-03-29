@@ -3,167 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v2.6</title>
+    <title>PriceScout v3.1 - Duty Report</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#00e5ff">
+    <meta name="theme-color" content="#0a0a0f">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
-        :root { --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #fff; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 85px 16px 100px 16px; }
-        header { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid #1f1f2e; }
+        :root { 
+            --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #fff; --sub: #888; 
+            --danger: #ff4d4d; --success: #00e676; --dabelle: #e91e8c; 
+        }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 80px 16px 100px 16px; }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: rgba(10,10,15,0.95); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; border-bottom: 1px solid #1f1f2e; }
         .logo { font-weight: 800; font-size: 20px; color: var(--accent); }
         .v-tag { font-size: 9px; background: #333; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
-        .card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #1f1f2e; }
-        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 15px; font-weight: 700; width: 100%; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        #preview { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; display: none; margin-bottom: 15px; border: 2px solid #1f1f2e; }
-        input { background: #000; border: 1px solid #2e2e42; color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background: #16161e; display: flex; border-top: 1px solid #1f1f2e; padding-bottom: 15px; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; text-decoration: none; }
+        .card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #1f1f2e; }
+        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-pdf { background: #fff; color: #000; margin-top: 10px; border: 2px solid var(--accent); }
+        
+        input { background: #000; border: 1px solid #2e2e42; color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid #1f1f2e; padding-bottom: 18px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--sub); font-size: 10px; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
-        #loader { display: none; text-align: center; margin: 15px 0; }
-        .progress-bar { height: 3px; background: #1f1f2e; overflow: hidden; margin-top: 8px; border-radius: 2px; }
-        .progress-fill { height: 100%; background: var(--accent); width: 30%; animation: move 1.2s infinite; }
+        .nav-icon { font-size: 22px; margin-bottom: 5px; }
+        
+        #preview { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; border: 2px solid #1f1f2e; }
+        #loader { display: none; text-align: center; margin: 20px 0; }
+        .progress-bar { height: 3px; background: #1f1f2e; overflow: hidden; margin-top: 10px; border-radius: 2px; }
+        .progress-fill { height: 100%; background: var(--accent); width: 30%; animation: move 1.2s infinite ease-in-out; }
         @keyframes move { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
-        #api-panel { position: fixed; top: 80px; left: 16px; right: 16px; background: #1c1c26; border: 1px solid var(--accent); border-radius: 15px; padding: 20px; z-index: 2000; display: none; }
-        .brand-badge { font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; display: inline-block; }
+        
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .meta-val { font-size: 40px; font-weight: 800; line-height: 1; margin: 10px 0; color: var(--dabelle); }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">PriceScout<span class="v-tag">v2.6</span></div>
-        <button onclick="toggleApi()" style="background:none; border:none; font-size:20px;">🔑</button>
+        <div class="logo">PriceScout<span class="v-tag">v3.1</span></div>
+        <div style="font-size:11px; color:var(--dabelle); font-weight:bold; text-align:right;">DUTY COSMÉTICOS<br>Manaus/AM</div>
     </header>
 
-    <div id="api-panel">
-        <h4 style="margin:0 0 10px 0">API Key (Google AI Studio)</h4>
-        <input type="password" id="api-key" value="AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY">
-        <button class="btn" onclick="toggleApi()">Confirmar</button>
-        <p style="font-size:10px; color:#888; margin-top:10px;">Obtenha uma chave gratuita em: aistudio.google.com</p>
-    </div>
-
-    <div id="capture-view">
+    <div id="view-capture" class="view active">
         <img id="preview">
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn" onclick="document.getElementById('f').setAttribute('capture','environment');document.getElementById('f').click()">📸 Foto</button>
-                <button class="btn" style="background:#2e2e42; color:#fff" onclick="document.getElementById('f').removeAttribute('capture');document.getElementById('f').click()">📁 Galeria</button>
+                <button class="btn" onclick="openCam('camera')">📸 Foto Kit</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="openCam('gallery')">📁 Galeria</button>
             </div>
-            <input type="file" id="f" hidden accept="image/*">
+            <input type="file" id="input-file" hidden accept="image/*">
         </div>
 
         <div class="card">
-            <input type="text" id="store" placeholder="Loja/Bairro (Manaus)">
-            <button onclick="getGeo()" style="background:none; border:none; color:var(--accent); font-size:12px; margin-bottom:10px; width:100%; text-align:left;">📍 Localização Automática</button>
+            <input type="text" id="store" placeholder="Nome da Loja (Ex: DB Ponta Negra)">
+            <input type="text" id="city" placeholder="Manaus" value="Manaus">
         </div>
 
         <div id="loader">
-            <small id="status-msg" style="color:var(--accent)">Comprimindo imagem...</small>
+            <small id="status-msg" style="color:var(--accent)">IA Gerando Relatório Duty...</small>
             <div class="progress-bar"><div class="progress-fill"></div></div>
         </div>
 
         <div id="results"></div>
-        <button class="btn" id="go" style="display:none; margin-top:10px;" onclick="analyze()">Analisar Gôndola</button>
+        <button class="btn" id="go-btn" style="display:none; margin-top:10px;" onclick="analyze()">Analisar Pack S+C</button>
+        <button class="btn" id="save-btn" style="display:none; margin-top:10px; background:var(--dabelle);" onclick="saveData()">💾 Salvar e Gerar PDF</button>
+    </div>
+
+    <div id="view-strategy" class="view">
+        <h3 style="color:var(--dabelle)">Dashboard de Packs</h3>
+        <div class="card" style="text-align:center;">
+            <div style="color:var(--sub); font-size:10px; text-transform:uppercase;">Preço Médio Kits Dabelle</div>
+            <div class="meta-val" id="kit-avg-price">R$ --</div>
+            <div id="kit-status"></div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                <div><small style="color:var(--sub)">MIN</small><input type="number" id="cfg-min" value="17.90" style="padding:8px; margin:0;"></div>
+                <div><small style="color:var(--sub)">MAX</small><input type="number" id="cfg-max" value="21.90" style="padding:8px; margin:0;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-history" class="view">
+        <h3>Histórico de Relatórios</h3>
+        <div id="history-list"></div>
     </div>
 
     <nav>
-        <a href="#" class="nav-item active"><span>📷</span>Captura</a>
-        <a href="#" class="nav-item"><span>📊</span>Dash</a>
-        <a href="#" class="nav-item"><span>📜</span>Histórico</a>
+        <a href="#" class="nav-item active" onclick="switchView('capture', this)">
+            <span class="nav-icon">📷</span><span>Captura</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchView('strategy', this)">
+            <span class="nav-icon">🎯</span><span>Estratégia</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchView('history', this)">
+            <span class="nav-icon">📜</span><span>Histórico</span>
+        </a>
     </nav>
 
     <script>
-        const BRANDS = { 'Dabelle': '#e91e8c', 'Salon Line': '#ff6b35', 'Elseve': '#3b82f6', 'OX': '#8b5cf6', "L'Oréal": '#f59e0b', 'Dove': '#06b6d4', 'Pantene': '#10b981' };
-        let imgData = null;
+        const KEY = "AIzaSyCe3EoWX3-QFWU21VYvN2L8T03pWelgmAY"; 
+        let imgData = null, lastResult = [], db = JSON.parse(localStorage.getItem('duty_kit_records') || '[]');
 
-        function toggleApi() { const p = document.getElementById('api-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+        function switchView(viewName, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            el.classList.add('active');
+            if(viewName === 'strategy') renderStrategy();
+            if(viewName === 'history') renderHistory();
+        }
 
-        document.getElementById('f').onchange = e => {
+        function openCam(mode) {
+            const input = document.getElementById('input-file');
+            if(mode === 'camera') input.setAttribute('capture', 'environment');
+            else input.removeAttribute('capture');
+            input.click();
+        }
+
+        document.getElementById('input-file').onchange = e => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
+            reader.onload = (ev) => {
                 const img = new Image();
                 img.src = ev.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const max = 1024;
+                    const max = 800;
                     let w = img.width, h = img.height;
                     if (w > max) { h *= max / w; w = max; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    imgData = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
-                    document.getElementById('preview').src = canvas.toDataURL('image/jpeg');
+                    imgData = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('preview').src = imgData;
                     document.getElementById('preview').style.display = 'block';
-                    document.getElementById('go').style.display = 'flex';
+                    document.getElementById('go-btn').style.display = 'flex';
                 };
             };
             reader.readAsDataURL(file);
         };
 
         async function analyze() {
-            const key = document.getElementById('api-key').value.trim();
-            const btn = document.getElementById('go');
-            const msg = document.getElementById('status-msg');
+            const btn = document.getElementById('go-btn');
             document.getElementById('loader').style.display = 'block';
             btn.disabled = true;
 
-            const models = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-2.0-flash-exp'];
-            const prompt = `Retorne um JSON purista: {"produtos":[{"marca":"","linha":"","tipo":"","preco":0.00,"promocao":false}]}. Foco em: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene.`;
+            const prompt = `Retorne JSON: {"produtos":[{"marca":"","linha":"","preco":0.00}]}. Foque em KITS (Shampoo + Condicionador). Marcas: Dabelle, Salon Line, Elseve, Dove, Pantene.`;
 
-            let ok = false;
-            for(let m of models) {
-                msg.innerText = `Consultando ${m}...`;
-                try {
-                    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgData}}]}] })
-                    });
-                    const d = await r.json();
-                    if(d.error) throw new Error(`${d.error.code}: ${d.error.message}`);
-
-                    let txt = d.candidates[0].content.parts[0].text;
-                    const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
-                    render(json.produtos);
-                    ok = true; break;
-                } catch(err) { 
-                    console.error(err);
-                    msg.innerText = `Erro no ${m}. Tentando próximo...`;
-                }
-            }
-
+            try {
+                const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgData.split(',')[1]}}]}] })
+                });
+                const d = await r.json();
+                let txt = d.candidates[0].content.parts[0].text;
+                lastResult = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]).produtos;
+                renderCapture(lastResult);
+            } catch(err) { alert("Erro de IA. Verifique conexão."); }
             document.getElementById('loader').style.display = 'none';
             btn.disabled = false;
-            if(!ok) alert("Falha total. Verifique se sua API Key tem créditos ou se a imagem está clara.");
         }
 
-        function render(items) {
+        function renderCapture(items) {
             const res = document.getElementById('results');
-            res.innerHTML = `<h4 style="margin:15px 0">Detectados (${items.length})</h4>`;
+            res.innerHTML = `<h4 style="margin:15px 0">Análise de Gôndola</h4>`;
             items.forEach(p => {
-                const c = BRANDS[p.marca] || '#888';
-                res.innerHTML += `
-                    <div style="background:#1f1f2e; padding:12px; border-radius:10px; margin-bottom:8px; border-left:4px solid ${c}; display:flex; justify-content:space-between; align-items:center">
-                        <div>
-                            <span class="brand-badge" style="background:${c}; color:#fff">${p.marca}</span>
-                            <div style="font-size:12px; color:#aaa">${p.linha} ${p.tipo}</div>
-                        </div>
-                        <div style="text-align:right">
-                            <div style="font-weight:800; font-size:16px">R$ ${p.preco.toFixed(2)}</div>
-                            ${p.promocao ? '<span style="color:red; font-size:10px; font-weight:bold">PROMO</span>' : ''}
-                        </div>
-                    </div>`;
+                res.innerHTML += `<div style="background:#1f1f2e; padding:10px; border-radius:8px; margin-bottom:5px; border-left:3px solid ${p.marca==='Dabelle'?'#e91e8c':'#555'}; display:flex; justify-content:space-between;">
+                    <span style="font-size:12px;">${p.marca} ${p.linha}</span><strong>R$ ${p.preco.toFixed(2)}</strong>
+                </div>`;
             });
-            document.getElementById('go').style.display = 'none';
+            document.getElementById('go-btn').style.display = 'none';
+            document.getElementById('save-btn').style.display = 'flex';
         }
 
-        async function getGeo() {
-            navigator.geolocation.getCurrentPosition(async p => {
-                const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-                const d = await r.json();
-                document.getElementById('store').value = d.address.suburb || d.address.neighbourhood || "Manaus";
+        function saveData() {
+            const store = document.getElementById('store').value || "PDV Manaus";
+            const record = { id: Date.now(), date: new Date().toLocaleDateString('pt-BR'), store, prods: lastResult, img: imgData };
+            db.unshift(record);
+            localStorage.setItem('duty_kit_records', JSON.stringify(db));
+            generatePDF(record);
+        }
+
+        async function generatePDF(rec) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const min = parseFloat(document.getElementById('cfg-min').value);
+            const max = parseFloat(document.getElementById('cfg-max').value);
+            
+            // Header
+            doc.setFillColor(233, 30, 140); // Cor Dabelle
+            doc.rect(0, 0, 210, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("DUTY COSMETICOS - RELATORIO DE VISITA", 15, 13);
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Loja: ${rec.store}`, 15, 30);
+            doc.text(`Data: ${rec.date}`, 15, 35);
+            doc.text(`Cidade: Manaus/AM`, 15, 40);
+            
+            // Tabela de Preços
+            doc.line(15, 45, 195, 45);
+            doc.setFont(undefined, 'bold');
+            doc.text("PRODUTO", 15, 52);
+            doc.text("PRECO", 150, 52);
+            doc.setFont(undefined, 'normal');
+            
+            let y = 60;
+            rec.prods.forEach(p => {
+                doc.text(`${p.marca} ${p.linha}`, 15, y);
+                doc.text(`R$ ${p.preco.toFixed(2)}`, 150, y);
+                y += 8;
             });
+            
+            // Analise Dabelle
+            const dabelle = rec.prods.find(p => p.marca === 'Dabelle');
+            if(dabelle) {
+                y += 10;
+                doc.setDrawColor(233, 30, 140);
+                doc.rect(15, y, 180, 20);
+                const status = dabelle.preco < min ? "COMBATE" : (dabelle.preco <= max ? "IDEAL" : "ALTO");
+                doc.text(`POSICIONAMENTO DABELLE: ${status}`, 20, y + 12);
+            }
+            
+            doc.save(`Relatorio_Duty_${rec.store.replace(' ','_')}.pdf`);
+            alert("PDF Gerado! Verifique seus downloads.");
+            location.reload();
+        }
+
+        function renderStrategy() {
+            let tDab = 0, cDab = 0;
+            db.forEach(r => r.prods.forEach(p => { if(p.marca==='Dabelle'){ tDab += p.preco; cDab++; } }));
+            const avg = cDab > 0 ? tDab / cDab : 0;
+            document.getElementById('kit-avg-price').innerText = avg > 0 ? `R$ ${avg.toFixed(2)}` : "--";
+            const min = parseFloat(document.getElementById('cfg-min').value);
+            const max = parseFloat(document.getElementById('cfg-max').value);
+            const statusEl = document.getElementById('kit-status');
+            if(avg > 0) {
+                const isOk = avg >= min && avg <= max;
+                statusEl.innerHTML = `<span class="status-badge" style="background:${isOk?'var(--success)':'var(--danger)'}; color:#000;">${isOk?'Dentro da Meta':'Fora de Range'}</span>`;
+            }
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = db.map(r => `<div class="card" style="font-size:12px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <strong>${r.store}</strong><span>${r.date}</span>
+                </div>
+                ${r.prods.filter(p=>p.marca==='Dabelle').map(p=>`Kit Dabelle: R$ ${p.preco.toFixed(2)}`).join('')}
+                <button class="btn btn-pdf" style="padding:8px; font-size:10px;" onclick='generatePDF(${JSON.stringify(r)})'>Re-gerar PDF</button>
+            </div>`).join('');
         }
     </script>
 </body>
