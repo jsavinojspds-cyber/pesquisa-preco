@@ -2,246 +2,307 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceHair 3 v1.2 Ultra</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DutyPrice">
+    <title>DutyPrice - DaBelle</title>
+    
     <style>
-        :root { --cyan: #00e5ff; --bg: #050508; --glass: rgba(255, 255, 255, 0.03); }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
-        .glass { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
-        .tab-content { display: none; }
-        .active-tab { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .price-row { display: grid; grid-template-columns: 1fr auto; padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .price-tag { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: var(--cyan); background: rgba(0, 229, 255, 0.1); padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .nav-btn.active { color: var(--cyan); }
-        .nav-btn.active svg { filter: drop-shadow(0 0 5px var(--cyan)); }
-        #previewArea { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 2px dashed rgba(255,255,255,0.1); }
-        #previewArea.loaded { border: 2px solid var(--cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); background: rgba(0, 229, 255, 0.02); }
+        :root {
+            --dabelle-blue: #002D58;
+            --dabelle-blue-dark: #001A33;
+            --dabelle-gold: #C5A059;
+            --bg-gray: #F2F2F7;
+            --text-dark: #1C1C1E;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --card-white: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            margin: 0;
+            /* Otimização iPhone 15 Pro Max (Dynamic Island e Bottom Bar) */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dabelle-blue-dark), var(--dabelle-blue));
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header span {
+            color: var(--dabelle-gold);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .container { padding: 10px 16px 120px 16px; }
+
+        .category-header {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #636366;
+            margin: 25px 0 10px 4px;
+            text-transform: uppercase;
+        }
+
+        /* Card Layout */
+        .product-card {
+            background: var(--card-white);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .product-main {
+            border-left: 4px solid var(--dabelle-gold);
+            padding-left: 12px;
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--dabelle-blue);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Inputs */
+        .input-wrapper { margin-top: 10px; }
+        
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #8E8E93;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: 1.5px solid #E5E5EA;
+            padding: 0 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: #F9F9F9;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--dabelle-blue);
+            background: white;
+        }
+
+        /* Competitors Area */
+        .competitors-list {
+            background: #F8F9FB;
+            border-radius: 14px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .comp-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #EDEDF2;
+        }
+
+        .comp-item:last-child { border-bottom: none; }
+
+        .comp-info { flex: 1; font-size: 0.9rem; font-weight: 500; color: #48484A; }
+        
+        .comp-input {
+            width: 90px !important;
+            height: 38px !important;
+            font-size: 0.95rem !important;
+            text-align: right;
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .above { background: #FFE5E5; color: var(--danger); }
+        .below { background: #E5F9E5; color: var(--success); }
+
+        /* Floating Footer */
+        footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 15px 20px calc(15px + env(safe-area-inset-bottom));
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-top: 0.5px solid #C6C6C8;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 54px;
+            border-radius: 16px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active { opacity: 0.7; }
+
+        .btn-camera { background: #E5E5EA; color: var(--text-dark); flex: 0 0 60px; font-size: 1.4rem; }
+        .btn-save { background: var(--dabelle-blue); color: white; box-shadow: 0 4px 12px rgba(0,45,88,0.2); }
     </style>
 </head>
-<body class="overflow-hidden">
+<body>
 
-    <header class="p-5 text-center border-b border-white/5 bg-black/40 backdrop-blur-md">
-        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair 3</h1>
-        <div class="flex justify-center mt-1">
-            <span class="text-[9px] bg-white/10 px-3 py-0.5 rounded-full uppercase tracking-[0.3em] font-black text-gray-400">v1.2 ULTRA</span>
-        </div>
-    </header>
+<header>
+    <h1>DutyPrice</h1>
+    <span>Inteligência de Mercado • DaBelle</span>
+</header>
 
-    <main class="flex-1 overflow-y-auto p-4 space-y-4">
+<div class="container" id="main-content"></div>
+
+<footer>
+    <button class="btn btn-camera" onclick="alert('Câmera aberta...')">📸</button>
+    <button class="btn btn-save" onclick="exportData()">Exportar Relatório</button>
+</footer>
+
+<script>
+    const inventory = [
+        { cat: "Kits", prod: "DABELLE - KIT SH+COND - 425ML", comps: ["Elseve", "Pantene", "Lola", "Salon Line"] },
+        { cat: "Finalizadores", prod: "DABELLE - CREME DE PENTEAR - 270G", comps: ["Elseve", "Pantene", "Salon Line", "Skala"] },
+        { cat: "Máscaras", prod: "DABELLE - MASCARA - 400G", comps: ["Elseve", "Pantene", "Lola", "Novex"] },
+        { cat: "Óleos", prod: "DABELLE - OLEO EM CREME - 190ML", comps: ["Elseve", "Pantene", "Amend"] },
+        { cat: "Óleos", prod: "DABELLE - OLEO - 45ML", comps: ["Elseve", "Pantene", "Amend"] },
+        { cat: "Tratamento", prod: "DABELLE - CPP JUJUBA - 1KG", comps: ["Skala", "Salon Line"] },
+        { cat: "Definição", prod: "DABELLE - GELATINA - 500G", comps: ["Salon Line", "Lola"] }
+    ];
+
+    function init() {
+        const wrapper = document.getElementById('main-content');
+        let currentCat = '';
         
-        <section id="tab-scanner" class="tab-content active-tab space-y-4">
-            
-            <div class="glass p-4">
-                <label class="text-[10px] uppercase font-black text-gray-500 mb-1 block tracking-widest">Ponto de Venda</label>
-                <input type="text" id="storeName" placeholder="Ex: Supermercado DB" 
-                    class="w-full bg-transparent border-b border-white/10 p-2 text-sm outline-none focus:border-[#00e5ff] transition-all">
-            </div>
-
-            <div id="previewArea" class="glass min-h-[140px] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                <img id="imgPreview" class="hidden max-h-48 rounded-xl shadow-2xl z-10" src="">
-                <div id="uploadStatus" class="z-10 text-center">
-                    <span class="text-4xl opacity-10">📷</span>
-                    <p class="text-[10px] text-gray-600 font-black uppercase mt-3 tracking-widest">Nenhuma foto selecionada</p>
-                </div>
-                <div id="successBadge" class="hidden absolute top-3 right-3 bg-cyan-500 text-black text-[9px] font-black px-3 py-1 rounded-full z-20 shadow-lg animate-bounce">FOTO PRONTA</div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="document.getElementById('fileCam').click()" class="bg-white text-black font-black py-6 rounded-2xl flex flex-col items-center gap-1 active:scale-95 transition-all shadow-xl hover:bg-gray-100">
-                    <span class="text-2xl">📸</span><span class="text-[10px] font-black uppercase tracking-tighter">Câmera Now</span>
-                </button>
-                <button onclick="document.getElementById('fileGal').click()" class="bg-white/5 text-white font-black py-6 rounded-2xl flex flex-col items-center gap-1 border border-white/10 active:scale-95 transition-all hover:bg-white/10">
-                    <span class="text-2xl">🖼️</span><span class="text-[10px] font-black uppercase tracking-tighter">Da Galeria</span>
-                </button>
-            </div>
-            
-            <input type="file" id="fileCam" accept="image/*" capture="environment" class="hidden" onchange="handleImage(this)">
-            <input type="file" id="fileGal" accept="image/*" class="hidden" onchange="handleImage(this)">
-
-            <button id="runBtn" disabled onclick="startAudit()" 
-                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 text-sm shadow-2xl transition-all">
-                Analisar Gôndola
-            </button>
-
-            <div id="resultsBox" class="hidden animate-in fade-in duration-500 pb-10">
-                <div class="flex justify-between items-end mb-4 px-2">
-                    <div>
-                        <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Auditoria Finalizada</h2>
-                        <p id="locInfo" class="text-xs text-cyan-400 font-bold">📍 Manaus, AM</p>
-                    </div>
-                    <button onclick="share()" class="bg-[#25D366] text-black text-[10px] font-black px-6 py-2.5 rounded-full uppercase shadow-lg active:scale-95">Relatório Zap</button>
-                </div>
-                <div id="tableBody" class="glass overflow-hidden divide-y divide-white/5">
-                    </div>
-            </div>
-        </section>
-
-        <section id="tab-config" class="tab-content space-y-4">
-            <h2 class="text-[10px] font-black uppercase text-gray-500 px-3 tracking-widest">Segurança e Sistema</h2>
-            <div class="glass p-6 space-y-5">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-gray-300">Conexão com Gemini</span>
-                    <div id="dot" class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_red]"></div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[9px] uppercase font-bold text-gray-600">API Key Privada</label>
-                    <input type="password" id="key" placeholder="Insira sua Chave..." class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-cyan-400 outline-none focus:border-cyan-400 transition-all">
-                </div>
-                <button onclick="saveKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-[11px] tracking-widest active:scale-95 shadow-lg shadow-cyan-500/20">Verificar e Salvar</button>
-            </div>
-            <div class="p-6 text-[10px] text-gray-600 leading-relaxed text-center italic">
-                A versão 1.2 Ultra utiliza o modelo 1.5-Flash-Latest para maior velocidade em conexões 4G de Manaus.
-            </div>
-        </section>
-
-    </main>
-
-    <nav class="bg-black/90 backdrop-blur-2xl border-t border-white/5 flex justify-around pb-8 pt-3">
-        <button onclick="tab('scanner')" id="btn-scan" class="nav-btn active px-10 flex flex-col items-center gap-1.5 text-gray-500 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-            <span class="text-[9px] font-black uppercase tracking-widest">Scanner</span>
-        </button>
-        <button onclick="tab('config')" id="btn-conf" class="nav-btn px-10 flex flex-col items-center gap-1.5 text-gray-500 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            <span class="text-[9px] font-black uppercase tracking-widest">Ajustes</span>
-        </button>
-    </nav>
-
-    <div id="loader" class="hidden fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-12 text-center backdrop-blur-lg">
-        <div class="w-16 h-16 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_20px_rgba(0,229,255,0.3)]"></div>
-        <p class="text-[#00e5ff] font-black italic animate-pulse text-sm tracking-[0.2em] uppercase">Auditoria PriceHair em Curso...</p>
-        <p class="text-gray-600 text-[10px] mt-4 font-bold uppercase">Aguardando Inteligência Artificial</p>
-    </div>
-
-    <canvas id="cv" class="hidden"></canvas>
-
-    <script>
-        let rawImg = null;
-        let isReady = false;
-        let locData = "Manaus, AM";
-
-        function tab(t) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'text-[#00e5ff]'));
-            document.getElementById(`tab-${t}`).classList.add('active-tab');
-            document.getElementById(`btn-${t === 'scanner' ? 'scan' : 'conf'}`).classList.add('active', 'text-[#00e5ff]');
-        }
-
-        async function saveKey() {
-            const k = document.getElementById('key').value.trim();
-            if(!k) return;
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${k}`);
-            if(res.ok) {
-                isReady = true;
-                document.getElementById('dot').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
-                localStorage.setItem('gh_key_3', k);
-                alert("CONECTADO COM SUCESSO!");
-                tab('scanner');
-                checkStatus();
-            } else { alert("ERRO: Chave API inválida."); }
-        }
-
-        window.onload = () => { 
-            const k = localStorage.getItem('gh_key_3');
-            if(k) { document.getElementById('key').value = k; saveKey(); }
-        };
-
-        function handleImage(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    // Feedback Visual de Sucesso
-                    document.getElementById('imgPreview').src = e.target.result;
-                    document.getElementById('imgPreview').classList.remove('hidden');
-                    document.getElementById('uploadStatus').classList.add('hidden');
-                    document.getElementById('successBadge').classList.remove('hidden');
-                    document.getElementById('previewArea').classList.add('loaded');
-
-                    const canvas = document.getElementById('cv');
-                    let w = img.width, h = img.height, max = 1100;
-                    if(w > h && w > max) { h *= max/w; w = max; } else if(h > max) { w *= max/h; h = max; }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    rawImg = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
-                    checkStatus();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function checkStatus() {
-            const btn = document.getElementById('runBtn');
-            const store = document.getElementById('storeName').value.length >= 2;
-            if(isReady && rawImg && store) {
-                btn.disabled = false;
-                btn.classList.replace('bg-gray-800', 'bg-[#00e5ff]');
-                btn.classList.replace('text-gray-500', 'text-black');
-                btn.style.opacity = "1";
-            } else {
-                btn.disabled = true;
-                btn.classList.replace('bg-[#00e5ff]', 'bg-gray-800');
-                btn.classList.replace('text-black', 'text-gray-500');
-                btn.style.opacity = "0.5";
+        inventory.forEach((item, idx) => {
+            if (item.cat !== currentCat) {
+                currentCat = item.cat;
+                const title = document.createElement('div');
+                title.className = 'category-header';
+                title.innerText = currentCat;
+                wrapper.appendChild(title);
             }
+
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-main">
+                    <span class="product-name">${item.prod}</span>
+                    <div id="status-${idx}"></div>
+                    <div class="input-wrapper">
+                        <label>Preço Sugerido DaBelle</label>
+                        <input type="number" step="0.01" inputmode="decimal" placeholder="R$ 0,00" 
+                               id="db-${idx}" oninput="update(${idx})">
+                    </div>
+                </div>
+                <div class="competitors-list">
+                    <label>Comparativo com Concorrentes</label>
+                    ${item.comps.map((c, cIdx) => `
+                        <div class="comp-item">
+                            <span class="comp-info">${c}</span>
+                            <input type="number" step="0.01" inputmode="decimal" 
+                                   class="comp-input" placeholder="0,00" 
+                                   id="cp-${idx}-${cIdx}" oninput="update(${idx})">
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            wrapper.appendChild(card);
+            loadSavedData(idx);
+        });
+    }
+
+    function update(idx) {
+        const dbPrice = parseFloat(document.getElementById(`db-${idx}`).value) || 0;
+        const compNodes = document.querySelectorAll(`[id^="cp-${idx}-"]`);
+        const statusDiv = document.getElementById(`status-${idx}`);
+        
+        let sum = 0, count = 0;
+        compNodes.forEach(input => {
+            const val = parseFloat(input.value);
+            if(val > 0) { sum += val; count++; }
+            localStorage.setItem(input.id, input.value); // Auto-save
+        });
+        localStorage.setItem(`db-${idx}`, dbPrice); // Auto-save
+
+        if (dbPrice > 0 && count > 0) {
+            const avg = sum / count;
+            const diff = ((dbPrice / avg) - 1) * 100;
+            if (dbPrice > avg) {
+                statusDiv.innerHTML = `<span class="badge above">Acima da média: +${diff.toFixed(1)}%</span>`;
+            } else {
+                statusDiv.innerHTML = `<span class="badge below">Abaixo da média: ${diff.toFixed(1)}%</span>`;
+            }
+        } else {
+            statusDiv.innerHTML = '';
         }
-        document.getElementById('storeName').oninput = checkStatus;
+    }
 
-        async function startAudit() {
-            document.getElementById('loader').classList.remove('hidden');
-            const key = localStorage.getItem('gh_key_3');
-            const store = document.getElementById('storeName').value.toUpperCase();
-            
-            // Geolocalização
-            try {
-                const p = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout:6000}));
-                const g = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-                const d = await g.json();
-                locData = `${d.address.city || d.address.town || 'Manaus'}, ${d.address.state || 'AM'}`;
-            } catch(e) { locData = "Manaus, AM"; }
+    function loadSavedData(idx) {
+        const dbInput = document.getElementById(`db-${idx}`);
+        dbInput.value = localStorage.getItem(`db-${idx}`) || '';
+        
+        const compNodes = document.querySelectorAll(`[id^="cp-${idx}-"]`);
+        compNodes.forEach(input => {
+            input.value = localStorage.getItem(input.id) || '';
+        });
+        update(idx);
+    }
 
-            // Endpoint Estável v1
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
-            const payload = { contents: [{ parts: [
-                { text: "Aja como auditor profissional de gôndolas. Extraia estritamente Marca, Nome Curto do Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato por linha: Nome do Item|Preço. Use | como separador único. Ignore promoções e kits." },
-                { inline_data: { mime_type: "image/jpeg", data: rawImg } }
-            ]}]};
+    function exportData() {
+        let log = "--- RELATÓRIO DUTYPRICE ---\n";
+        inventory.forEach((item, idx) => {
+            const p = document.getElementById(`db-${idx}`).value;
+            if(p) log += `${item.prod}: R$ ${p}\n`;
+        });
+        alert(log || "Nenhum preço registrado.");
+        console.log(log);
+    }
 
-            try {
-                const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await res.json();
-                if(!data.candidates) throw new Error();
-                
-                const text = data.candidates[0].content.parts[0].text;
-                
-                const table = document.getElementById('tableBody');
-                if (text.trim().length < 5) {
-                    table.innerHTML = `<div class="p-8 text-center text-xs font-bold text-gray-600">NENHUM ITEM ALVO DETECTADO</div>`;
-                } else {
-                    table.innerHTML = text.trim().split('\n').map(line => {
-                        const [item, price] = line.split('|');
-                        return `<div class="price-row active:bg-white/5"><div class="text-[11px] font-black text-gray-300 uppercase leading-tight pr-4">${item}</div><div class="price-tag text-[11px]">${price || 'R$ ---'}</div></div>`;
-                    }).join('');
-                }
+    window.onload = init;
+</script>
 
-                document.getElementById('locInfo').innerText = `📍 ${locData}`;
-                document.getElementById('resultsBox').classList.remove('hidden');
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            } catch(e) { alert("ERRO NA ANÁLISE: Verifique a foto e sua chave API."); }
-            finally { document.getElementById('loader').classList.add('hidden'); }
-        }
-
-        function share() {
-            const s = document.getElementById('storeName').value.toUpperCase();
-            const rows = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
-            const t = `*PRICEHAIR 3 - v1.2*\n🏪 LOJA: ${s}\n📍 LOCAL: ${locData}\n\n*COLETA:*\n${rows}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(t)}`);
-        }
-    </script>
 </body>
 </html>
