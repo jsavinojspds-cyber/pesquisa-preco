@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v3.0</title>
+    <title>PriceScout v3.1</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
     
     <style>
         :root { --bg: #0a0a0f; --card: #16161e; --accent: #00e5ff; --text: #fff; --border: #2e2e42; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 20px 16px 100px 16px; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 20px 16px 120px 16px; box-sizing: border-box; }
         
         header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .logo { font-weight: 800; font-size: 22px; color: var(--accent); }
         .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; color: #aaa; }
 
         .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; }
-        .btn:disabled { background: #333; color: #666; }
+        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: 0.2s; }
+        .btn:disabled { background: #222; color: #555; transform: scale(0.98); }
         
         input { background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
         input:focus { border-color: var(--accent); outline: none; }
@@ -35,11 +35,11 @@
             display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
         }
         .prod-info { flex: 1; padding-right: 10px; }
-        .prod-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
-        .prod-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; }
-        .prod-price { font-weight: 800; font-size: 19px; color: #fff; }
+        .prod-name { font-weight: 700; font-size: 15px; }
+        .prod-brand { font-size: 10px; color: var(--accent); text-transform: uppercase; font-weight: bold; }
+        .prod-price { font-weight: 800; font-size: 20px; color: #fff; }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 20px; z-index: 100; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 25px; z-index: 100; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 11px; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
     </style>
@@ -47,34 +47,34 @@
 <body>
 
     <header>
-        <div class="logo">PriceScout<span class="v-tag">v3.0</span></div>
+        <div class="logo">PriceScout<span class="v-tag">v3.1</span></div>
     </header>
 
     <div id="capture-area">
         <div class="card">
-            <label style="color: var(--accent); font-size: 11px; font-weight: bold; margin-bottom: 5px; display: block;">GOOGLE AI KEY</label>
-            <input type="password" id="api-key" placeholder="Cole sua API Key aqui" oninput="checkKey()">
-            <small id="key-msg" style="color: #ff4444; font-size: 10px;">Chave necessária para analisar</small>
+            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔴 CHAVE AUSENTE</label>
+            <input type="password" id="api-key" placeholder="Cole sua chave Gemini aqui" oninput="saveAndCheckKey()">
         </div>
 
         <img id="preview">
 
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button class="btn" onclick="openMedia('camera')">📸 Câmera</button>
-                <button class="btn" style="background:#2e2e42; color:#fff" onclick="openMedia('file')">📁 Galeria</button>
+                <button class="btn" onclick="triggerInput('camera')">📸 Câmera</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="triggerInput('file')">📁 Arquivo</button>
             </div>
-            <input type="file" id="media-input" hidden accept="image/*">
+            <input type="file" id="main-input" hidden accept="image/*">
         </div>
 
         <div id="loader">
-            <small id="status-msg" style="color:var(--accent)">Identificando produtos...</small>
+            <small id="status-msg" style="color:var(--accent)">Processando...</small>
             <div class="p-bar"><div class="p-fill"></div></div>
         </div>
 
         <div id="results"></div>
 
-        <button class="btn" id="btn-go" style="display:none; margin-top:15px;" onclick="analyze()" disabled>Analisar Preços</button>
+        <button class="btn" id="btn-analyze" style="display:none; margin-top:15px;" onclick="startAnalysis()" disabled>Analisar Preços</button>
+        <button class="btn" id="btn-clear" style="display:none; margin-top:10px; background:#222; color:#aaa;" onclick="location.reload()">Limpar e Nova Foto</button>
     </div>
 
     <nav>
@@ -84,42 +84,42 @@
     </nav>
 
     <script>
-        let imgBase64 = null;
+        let imgStore = null;
 
-        // Recupera chave salva ao abrir
+        // Ao abrir, busca chave no localStorage
         window.onload = () => {
-            const saved = localStorage.getItem('ps_api_key_v3');
+            const saved = localStorage.getItem('ps_api_key_v31');
             if(saved) {
                 document.getElementById('api-key').value = saved;
-                checkKey();
+                saveAndCheckKey();
             }
         };
 
-        function checkKey() {
+        function saveAndCheckKey() {
             const val = document.getElementById('api-key').value.trim();
-            const msg = document.getElementById('key-msg');
-            const btn = document.getElementById('btn-go');
+            const label = document.getElementById('key-label');
+            const btn = document.getElementById('btn-analyze');
             
-            if(val.length > 20) {
-                msg.innerText = "🟢 Chave pronta";
-                msg.style.color = "#00ff00";
-                localStorage.setItem('ps_api_key_v3', val);
-                if(imgBase64) btn.disabled = false;
+            if(val.length > 25) {
+                label.innerText = "🟢 CHAVE PRONTA";
+                label.style.color = "#00ff00";
+                localStorage.setItem('ps_api_key_v31', val);
+                if(imgStore) btn.disabled = false;
             } else {
-                msg.innerText = "🔴 Chave necessária para analisar";
-                msg.style.color = "#ff4444";
+                label.innerText = "🔴 CHAVE AUSENTE OU INVÁLIDA";
+                label.style.color = "#ff4444";
                 btn.disabled = true;
             }
         }
 
-        function openMedia(type) {
-            const input = document.getElementById('media-input');
-            if(type === 'camera') input.setAttribute('capture', 'environment');
+        function triggerInput(mode) {
+            const input = document.getElementById('main-input');
+            if(mode === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
 
-        document.getElementById('media-input').onchange = e => {
+        document.getElementById('main-input').onchange = e => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
@@ -134,46 +134,49 @@
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                     
-                    imgBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                    imgStore = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
                     const pre = document.getElementById('preview');
                     pre.src = canvas.toDataURL('image/jpeg');
                     pre.style.display = 'block';
-                    document.getElementById('btn-go').style.display = 'flex';
-                    checkKey();
-                    document.getElementById('results').innerHTML = '';
+                    document.getElementById('btn-analyze').style.display = 'flex';
+                    saveAndCheckKey();
                 };
             };
             reader.readAsDataURL(file);
         };
 
-        async function analyze() {
+        async function startAnalysis() {
             const key = document.getElementById('api-key').value.trim();
             const loader = document.getElementById('loader');
-            const btn = document.getElementById('btn-go');
+            const btn = document.getElementById('btn-analyze');
+            const status = document.getElementById('status-msg');
             
             loader.style.display = 'block';
             btn.disabled = true;
+            status.innerText = "IA lendo gôndola...";
 
-            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos e seus preços individuais. Foco em: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
+            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos das marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgBase64}}]}] })
+                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgStore}}]}] })
                 });
 
                 const data = await res.json();
                 
                 if(data.error) {
-                    throw new Error(data.error.message);
+                    throw new Error(data.error.message + " (" + data.error.code + ")");
                 }
 
                 let txt = data.candidates[0].content.parts[0].text;
-                const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
+                const match = txt.match(/\{[\s\S]*\}/);
+                if(!match) throw new Error("A IA não conseguiu formatar os dados. Tente outra foto.");
                 
+                const json = JSON.parse(match[0]);
                 const area = document.getElementById('results');
-                area.innerHTML = `<h3 style="margin:20px 0 10px 0; font-size:16px;">Preços na Gôndola</h3>`;
+                area.innerHTML = `<h3 style="margin:20px 0 10px 0; font-size:16px;">Resultados:</h3>`;
                 
                 json.produtos.forEach(p => {
                     area.innerHTML += `
@@ -186,12 +189,13 @@
                         </div>`;
                 });
                 btn.style.display = 'none';
+                document.getElementById('btn-clear').style.display = 'flex';
 
             } catch (err) {
                 alert("Erro: " + err.message);
+                btn.disabled = false;
             }
             loader.style.display = 'none';
-            btn.disabled = false;
         }
     </script>
 </body>
