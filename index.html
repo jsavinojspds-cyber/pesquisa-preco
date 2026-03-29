@@ -3,181 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PriceHair 3 v1.0</title>
+    <title>PriceHair v1.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --neon-cyan: #00e5ff;
-            --dark-bg: #0a0a0f;
+            --dark-bg: #07070a;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
         body { 
             background-color: var(--dark-bg); 
             color: #f1f1f1; 
             font-family: -apple-system, system-ui, sans-serif;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 18px;
         }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content { display: none; animation: slideUp 0.3s ease-out; }
         .active-tab { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Tabela Estilizada */
+        /* Tabela de Preços v1.1 */
         .price-row {
             display: grid;
             grid-template-columns: 1fr auto;
             align-items: center;
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .price-tag {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 229, 255, 0.1);
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(0, 229, 255, 0.05));
             color: var(--neon-cyan);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
-        
         .nav-btn.active { color: var(--neon-cyan); }
-        .nav-btn.active svg { filter: drop-shadow(0 0 5px var(--neon-cyan)); }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <header class="p-6 text-center border-b border-white/5 bg-black/20 backdrop-blur-md sticky top-0 z-40">
-        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair 3</h1>
-        <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-bold">Auditoria v1.0</p>
+    <header class="p-5 text-center bg-black/40 backdrop-blur-xl sticky top-0 z-40 border-b border-white/5">
+        <h1 class="text-2xl font-black italic tracking-tighter text-[#00e5ff]">PriceHair</h1>
+        <div class="flex items-center justify-center gap-2">
+            <span class="text-[9px] uppercase tracking-[0.3em] text-gray-500 font-bold">Auditoria Profissional</span>
+            <span class="text-[8px] border border-white/20 px-1.5 rounded text-white/40">v1.1</span>
+        </div>
     </header>
 
-    <div class="p-4">
+    <div class="p-4 max-w-md mx-auto">
         
         <section id="tab-scanner" class="tab-content active-tab space-y-4">
-            <div class="glass-card p-4">
-                <label class="text-[10px] uppercase font-black text-gray-500 mb-2 block">Ponto de Venda</label>
-                <input type="text" id="storeName" placeholder="Digite o nome da loja..." 
-                    class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-[#00e5ff]">
+            <div class="glass-card p-4 shadow-2xl">
+                <label class="text-[10px] uppercase font-black text-gray-500 mb-2 block tracking-widest">Identificação da Loja</label>
+                <input type="text" id="storeName" placeholder="Nome do Mercado ou Farmácia..." 
+                    class="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-[#00e5ff] transition-all">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-4">
                 <button onclick="document.getElementById('cameraInput').click()" 
-                    class="bg-white text-black font-black py-6 rounded-2xl flex flex-col items-center gap-2 shadow-xl active:scale-95 transition-all">
-                    <span class="text-2xl">📷</span>
-                    <span class="text-[10px] uppercase">Câmera</span>
+                    class="bg-white text-black font-black py-7 rounded-2xl flex flex-col items-center gap-2 shadow-lg active:scale-95 transition-all">
+                    <span class="text-3xl">📸</span>
+                    <span class="text-[10px] uppercase tracking-tighter">Tirar Foto</span>
                 </button>
                 <button onclick="document.getElementById('galleryInput').click()" 
-                    class="bg-white/5 text-white font-black py-6 rounded-2xl flex flex-col items-center gap-2 border border-white/10 active:scale-95 transition-all">
-                    <span class="text-2xl">📁</span>
-                    <span class="text-[10px] uppercase">Galeria</span>
+                    class="bg-white/5 text-white font-black py-7 rounded-2xl flex flex-col items-center gap-2 border border-white/10 active:scale-95 transition-all">
+                    <span class="text-3xl">🖼️</span>
+                    <span class="text-[10px] uppercase tracking-tighter">Galeria</span>
                 </button>
             </div>
             
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processFile(this)">
-            <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="processFile(this)">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImage(this)">
+            <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handleImage(this)">
 
-            <button id="analyzeBtn" disabled onclick="startAnalysis()" 
-                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 transition-all">
-                Analisar Gôndola
+            <button id="analyzeBtn" disabled onclick="execAnalysis()" 
+                class="w-full py-5 rounded-2xl bg-gray-800 text-gray-500 font-black uppercase tracking-widest opacity-50 transition-all text-sm">
+                Iniciar Auditoria
             </button>
 
-            <div id="resultsContainer" class="hidden space-y-4 pt-4">
-                <div class="flex justify-between items-end px-2">
-                    <div>
-                        <h2 class="text-xs font-black uppercase text-gray-500">Itens Coletados</h2>
-                        <p id="locDisplay" class="text-[10px] text-[#00e5ff] font-bold"></p>
+            <div id="resultsContainer" class="hidden space-y-4 pt-6 animate-in fade-in duration-500">
+                <div class="flex justify-between items-center px-2">
+                    <div class="flex flex-col">
+                        <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Relatório Extraído</h2>
+                        <p id="locDisplay" class="text-[11px] text-[#00e5ff] font-bold"></p>
                     </div>
-                    <button onclick="sendWhatsApp()" class="bg-[#25D366] text-black text-[10px] font-black px-4 py-2 rounded-full uppercase">Enviar Relatório</button>
+                    <button onclick="shareWhatsApp()" class="bg-[#25D366] text-black text-[10px] font-black px-5 py-2.5 rounded-full uppercase shadow-lg shadow-green-900/20 active:scale-90 transition-all">Enviar Zap</button>
                 </div>
                 
-                <div id="resultsList" class="glass-card overflow-hidden">
-                    <div class="price-row">
-                        <div class="text-xs font-bold text-gray-300">Dabelle Hair Love 400ml</div>
-                        <div class="price-tag text-sm">R$ 18,90</div>
+                <div id="resultsList" class="glass-card overflow-hidden shadow-2xl">
                     </div>
-                    <div class="price-row">
-                        <div class="text-xs font-bold text-gray-300">Elseve Liso dos Sonhos</div>
-                        <div class="price-tag text-sm">R$ 22,50</div>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <section id="tab-config" class="tab-content space-y-4">
-            <h2 class="text-sm font-black uppercase text-gray-400 px-2">Configurações</h2>
-            <div class="glass-card p-5">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xs font-bold">Status da Chave</span>
-                    <div id="statusDot" class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_red]"></div>
+        <section id="tab-config" class="tab-content space-y-5">
+            <h2 class="text-xs font-black uppercase text-gray-500 tracking-widest px-2">Ajustes Técnicos</h2>
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-5">
+                    <span class="text-xs font-bold text-gray-300">Status da Chave</span>
+                    <div id="statusDot" class="flex items-center gap-2">
+                         <span id="statusText" class="text-[9px] uppercase font-bold text-gray-600 tracking-widest">Inativa</span>
+                         <div class="w-3 h-3 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)] transition-all duration-500"></div>
+                    </div>
                 </div>
                 <input type="password" id="apiKey" placeholder="Cole sua Gemini API Key" 
-                    class="w-full bg-black/60 border border-white/10 rounded-xl p-4 text-sm text-cyan-400 mb-4 outline-none">
-                <button onclick="validateKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-xs">Validar Acesso</button>
+                    class="w-full bg-black border border-white/10 rounded-xl p-4 text-sm text-cyan-400 mb-5 outline-none focus:border-[#00e5ff]">
+                <button onclick="confirmKey()" class="w-full bg-[#00e5ff] text-black font-black py-4 rounded-xl uppercase text-xs shadow-lg shadow-cyan-500/20 active:scale-95 transition-all">Validar Chave</button>
             </div>
-            <div class="p-4 text-[10px] text-gray-600 leading-relaxed">
-                A chave API fica salva apenas neste navegador. Em caso de erro "Quota Exceeded", aguarde alguns minutos antes de analisar novamente.
+            <div class="glass-card p-5 space-y-2">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/5 pb-2">Marcas Alvo</p>
+                <p class="text-[10px] text-gray-500 leading-relaxed italic">
+                    Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene.
+                </p>
             </div>
         </section>
 
     </div>
 
-    <nav class="fixed bottom-0 inset-x-0 bg-black/60 backdrop-blur-xl border-t border-white/10 flex justify-around p-3 z-50">
-        <button onclick="switchTab('scanner')" id="nav-scanner" class="nav-btn active flex flex-col items-center gap-1 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-            <span class="text-[9px] font-black uppercase">Scanner</span>
+    <nav class="fixed bottom-0 inset-x-0 bg-black/60 backdrop-blur-2xl border-t border-white/10 flex justify-around p-4 z-50 rounded-t-3xl shadow-2xl">
+        <button onclick="switchTab('scanner')" id="nav-scanner" class="nav-btn active flex flex-col items-center gap-1.5 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Scanner</span>
         </button>
-        <button onclick="switchTab('config')" id="nav-config" class="nav-btn flex flex-col items-center gap-1 text-gray-600 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            <span class="text-[9px] font-black uppercase">Ajustes</span>
+        <button onclick="switchTab('config')" id="nav-config" class="nav-btn flex flex-col items-center gap-1.5 text-gray-600 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Ajustes</span>
         </button>
     </nav>
 
-    <div id="loading" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-10">
-        <div class="w-12 h-12 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-[#00e5ff] font-black italic animate-pulse uppercase text-xs tracking-widest">Auditoria em Andamento</p>
+    <div id="loading" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex flex-col items-center justify-center p-12">
+        <div class="relative w-20 h-20 mb-6">
+            <div class="absolute inset-0 border-4 border-[#00e5ff]/20 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-[#00e5ff] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <p class="text-[#00e5ff] font-black italic animate-pulse uppercase text-xs tracking-[0.3em]">Auditoria v1.1</p>
+        <p class="text-white/20 text-[8px] uppercase mt-4 font-bold tracking-widest">Processando dados em Manaus</p>
     </div>
 
     <canvas id="canvas" class="hidden"></canvas>
 
     <script>
-        let base64Img = null;
-        let apiValid = false;
-        let cityState = "Manaus, AM";
+        let base64 = null;
+        let isReady = false;
+        let locString = "Manaus, AM";
 
-        function switchTab(tab) {
+        function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'text-[#00e5ff]'));
-            
-            document.getElementById(`tab-${tab}`).classList.add('active-tab');
-            document.getElementById(`nav-${tab}`).classList.add('active', 'text-[#00e5ff]');
+            document.getElementById(`tab-${t}`).classList.add('active-tab');
+            document.getElementById(`nav-${t}`).classList.add('active', 'text-[#00e5ff]');
         }
 
-        async function validateKey() {
-            const key = document.getElementById('apiKey').value.trim();
-            if(!key) return;
+        async function confirmKey() {
+            const k = document.getElementById('apiKey').value.trim();
+            if(!k) return;
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${key}`);
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${k}`);
                 if(res.ok) {
-                    apiValid = true;
-                    document.getElementById('statusDot').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
-                    alert("Acesso Liberado!");
+                    isReady = true;
+                    document.querySelector('#statusDot div').className = "w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#00e5ff]";
+                    document.getElementById('statusText').innerText = "Ativa";
+                    document.getElementById('statusText').className = "text-[9px] uppercase font-bold text-cyan-400 tracking-widest";
+                    alert("Chave Validada com Sucesso!");
                     switchTab('scanner');
-                    updateBtn();
+                    refreshBtn();
                 } else { throw new Error(); }
-            } catch(e) { alert("Chave Inválida."); }
+            } catch(e) { alert("Chave inválida. Tente novamente."); }
         }
 
-        function processFile(input) {
+        function handleImage(input) {
             const file = input.files[0];
             if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            const r = new FileReader();
+            r.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.getElementById('canvas');
@@ -185,73 +191,73 @@
                     if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    base64Img = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-                    updateBtn();
+                    base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                    refreshBtn();
                 };
                 img.src = e.target.result;
             };
-            reader.readAsDataURL(file);
+            r.readAsDataURL(file);
         }
 
-        function updateBtn() {
+        function refreshBtn() {
             const btn = document.getElementById('analyzeBtn');
-            const store = document.getElementById('storeName').value.trim();
-            if(apiValid && base64Img && store.length > 2) {
+            const st = document.getElementById('storeName').value.trim();
+            if(isReady && base64 && st.length > 2) {
                 btn.disabled = false;
-                btn.className = "w-full py-5 rounded-2xl bg-[#00e5ff] text-black font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(0,229,255,0.3)]";
+                btn.className = "w-full py-5 rounded-2xl bg-[#00e5ff] text-black font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(0,229,255,0.3)] text-sm active:scale-95 transition-all";
             }
         }
 
-        document.getElementById('storeName').addEventListener('input', updateBtn);
+        document.getElementById('storeName').addEventListener('input', refreshBtn);
 
-        async function startAnalysis() {
+        async function execAnalysis() {
             document.getElementById('loading').classList.remove('hidden');
             
-            // Get Location
             try {
                 const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000}));
                 const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-                const data = await geo.json();
-                cityState = `${data.address.city || data.address.town || 'Manaus'}, ${data.address.state || 'AM'}`;
-            } catch(e) { console.log("GPS off"); }
+                const d = await geo.json();
+                locString = `${d.address.city || d.address.town || 'Manaus'}, ${d.address.state || 'AM'}`;
+            } catch(e) { console.log("GPS N/A"); }
 
-            const key = document.getElementById('apiKey').value.trim();
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            const k = document.getElementById('apiKey').value.trim();
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${k}`;
             
             const payload = {
                 contents: [{ parts: [
                     { text: "Aja como auditor. Extraia Marca, Item e Preço das marcas: Dabelle, Salon Line, Elseve, Novex, Seda, Niely, Dove, Pantene. Formato rigoroso: Marca Item|Preço. Use | para separar o preço." },
-                    { inline_data: { mime_type: "image/jpeg", data: base64Img } }
+                    { inline_data: { mime_type: "image/jpeg", data: base64 } }
                 ]}]
             };
 
             try {
                 const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
                 const data = await res.json();
-                const text = data.candidates[0].content.parts[0].text;
+                const out = data.candidates[0].content.parts[0].text;
                 
                 const list = document.getElementById('resultsList');
-                list.innerHTML = text.trim().split('\n').map(line => {
-                    const parts = line.split('|');
+                list.innerHTML = out.trim().split('\n').map(line => {
+                    const p = line.split('|');
                     return `
                         <div class="price-row">
-                            <div class="text-xs font-bold text-gray-300">${parts[0] || 'Item'}</div>
-                            <div class="price-tag text-xs">${parts[1] || '---'}</div>
+                            <div class="text-[11px] font-bold text-gray-300 leading-tight pr-4 uppercase">${p[0] || '---'}</div>
+                            <div class="price-tag text-xs">${p[1] || '---'}</div>
                         </div>
                     `;
                 }).join('');
 
-                document.getElementById('locDisplay').innerText = `📍 ${cityState}`;
+                document.getElementById('locDisplay').innerText = `📍 ${locString}`;
                 document.getElementById('resultsContainer').classList.remove('hidden');
-            } catch(e) { alert("Erro na análise."); }
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } catch(e) { alert("Erro ao analisar imagem."); }
             finally { document.getElementById('loading').classList.add('hidden'); }
         }
 
-        function sendWhatsApp() {
-            const store = document.getElementById('storeName').value.toUpperCase();
-            const items = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
-            const text = `*PRICEHAIR 3*\n🏪 *LOJA:* ${store}\n📍 *LOCAL:* ${cityState}\n\n${items}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+        function shareWhatsApp() {
+            const st = document.getElementById('storeName').value.toUpperCase();
+            const itms = Array.from(document.querySelectorAll('.price-row')).map(r => r.innerText.replace('\n', ': ')).join('\n');
+            const txt = `*PRICEHAIR v1.1*\n🏪 *LOJA:* ${st}\n📍 *LOCAL:* ${locString}\n\n${itms}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
         }
     </script>
 </body>
