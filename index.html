@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PriceScout v3.1</title>
+    <title>PriceScout v3.2</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0f">
@@ -17,13 +17,12 @@
         .v-tag { font-size: 10px; background: #333; padding: 2px 6px; border-radius: 4px; color: #aaa; }
 
         .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: 0.2s; }
-        .btn:disabled { background: #222; color: #555; transform: scale(0.98); }
+        .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-weight: 700; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; }
+        .btn:disabled { background: #222; color: #555; }
         
         input { background: #000; border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
-        input:focus { border-color: var(--accent); outline: none; }
 
-        #preview { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; border: 2px solid var(--border); }
+        #preview { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 15px; border: 2px solid var(--border); }
         
         #loader { display: none; text-align: center; margin: 20px 0; }
         .p-bar { height: 4px; background: var(--border); overflow: hidden; border-radius: 2px; margin-top: 8px; }
@@ -35,91 +34,90 @@
             display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
         }
         .prod-info { flex: 1; padding-right: 10px; }
-        .prod-name { font-weight: 700; font-size: 15px; }
+        .prod-name { font-weight: 700; font-size: 14px; }
         .prod-brand { font-size: 10px; color: var(--accent); text-transform: uppercase; font-weight: bold; }
-        .prod-price { font-weight: 800; font-size: 20px; color: #fff; }
+        .prod-price { font-weight: 800; font-size: 19px; }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 25px; z-index: 100; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 11px; text-decoration: none; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #16161e; display: flex; border-top: 1px solid var(--border); padding-bottom: 25px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #444; font-size: 11px; text-decoration: none; }
         .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">PriceScout<span class="v-tag">v3.1</span></div>
+        <div class="logo">PriceScout<span class="v-tag">v3.2 Fix</span></div>
     </header>
 
-    <div id="capture-area">
+    <div id="app">
         <div class="card">
-            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔴 CHAVE AUSENTE</label>
-            <input type="password" id="api-key" placeholder="Cole sua chave Gemini aqui" oninput="saveAndCheckKey()">
+            <label id="key-label" style="color: #ff4444; font-size: 11px; font-weight: bold; margin-bottom: 8px; display: block;">🔒 CHAVE NÃO IDENTIFICADA</label>
+            <input type="password" id="api-key" placeholder="Insira a Gemini Key aqui" oninput="validate()">
         </div>
 
         <img id="preview">
 
         <div class="card">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button class="btn" onclick="triggerInput('camera')">📸 Câmera</button>
-                <button class="btn" style="background:#2e2e42; color:#fff" onclick="triggerInput('file')">📁 Arquivo</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('camera')">📸 Foto</button>
+                <button class="btn" style="background:#2e2e42; color:#fff" onclick="pick('file')">📁 Galeria</button>
             </div>
-            <input type="file" id="main-input" hidden accept="image/*">
+            <input type="file" id="media" hidden accept="image/*">
         </div>
 
         <div id="loader">
-            <small id="status-msg" style="color:var(--accent)">Processando...</small>
+            <small id="status" style="color:var(--accent)">Analisando preços...</small>
             <div class="p-bar"><div class="p-fill"></div></div>
         </div>
 
         <div id="results"></div>
 
-        <button class="btn" id="btn-analyze" style="display:none; margin-top:15px;" onclick="startAnalysis()" disabled>Analisar Preços</button>
-        <button class="btn" id="btn-clear" style="display:none; margin-top:10px; background:#222; color:#aaa;" onclick="location.reload()">Limpar e Nova Foto</button>
+        <button class="btn" id="go" style="display:none; margin-top:15px;" onclick="run()" disabled>Analisar Gôndola</button>
+        <button class="btn" id="reset" style="display:none; margin-top:10px; background:#222; color:#aaa;" onclick="location.reload()">Nova Foto</button>
     </div>
 
     <nav>
-        <a href="#" class="nav-item active"><span>📷</span>Capturar</a>
+        <a href="#" class="nav-item active"><span>📷</span>Captura</a>
         <a href="#" class="nav-item"><span>📊</span>Dash</a>
         <a href="#" class="nav-item"><span>📜</span>Histórico</a>
     </nav>
 
     <script>
-        let imgStore = null;
+        let imgBase64 = null;
 
-        // Ao abrir, busca chave no localStorage
         window.onload = () => {
-            const saved = localStorage.getItem('ps_api_key_v31');
+            const saved = localStorage.getItem('ps_key_v32');
             if(saved) {
                 document.getElementById('api-key').value = saved;
-                saveAndCheckKey();
+                validate();
             }
         };
 
-        function saveAndCheckKey() {
+        function validate() {
             const val = document.getElementById('api-key').value.trim();
             const label = document.getElementById('key-label');
-            const btn = document.getElementById('btn-analyze');
+            const btn = document.getElementById('go');
             
-            if(val.length > 25) {
-                label.innerText = "🟢 CHAVE PRONTA";
+            if(val.length > 30) {
+                label.innerText = "🔓 CHAVE PRONTA";
                 label.style.color = "#00ff00";
-                localStorage.setItem('ps_api_key_v31', val);
-                if(imgStore) btn.disabled = false;
+                localStorage.setItem('ps_key_v32', val);
+                if(imgBase64) btn.disabled = false;
             } else {
-                label.innerText = "🔴 CHAVE AUSENTE OU INVÁLIDA";
+                label.innerText = "🔒 CHAVE NÃO IDENTIFICADA";
                 label.style.color = "#ff4444";
                 btn.disabled = true;
             }
         }
 
-        function triggerInput(mode) {
-            const input = document.getElementById('main-input');
+        function pick(mode) {
+            const input = document.getElementById('media');
             if(mode === 'camera') input.setAttribute('capture', 'environment');
             else input.removeAttribute('capture');
             input.click();
         }
 
-        document.getElementById('main-input').onchange = e => {
+        document.getElementById('media').onchange = e => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
@@ -134,49 +132,44 @@
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                     
-                    imgStore = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-                    const pre = document.getElementById('preview');
-                    pre.src = canvas.toDataURL('image/jpeg');
-                    pre.style.display = 'block';
-                    document.getElementById('btn-analyze').style.display = 'flex';
-                    saveAndCheckKey();
+                    imgBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                    document.getElementById('preview').src = canvas.toDataURL('image/jpeg');
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('go').style.display = 'flex';
+                    validate();
                 };
             };
             reader.readAsDataURL(file);
         };
 
-        async function startAnalysis() {
+        async function run() {
             const key = document.getElementById('api-key').value.trim();
+            const btn = document.getElementById('go');
             const loader = document.getElementById('loader');
-            const btn = document.getElementById('btn-analyze');
-            const status = document.getElementById('status-msg');
             
             loader.style.display = 'block';
             btn.disabled = true;
-            status.innerText = "IA lendo gôndola...";
 
-            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos das marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
+            const prompt = `Retorne EXCLUSIVAMENTE um JSON: {"produtos":[{"marca":"","item":"","preco":0.00}]}. Liste os produtos e seus preços individuais. Marcas: Dabelle, Salon Line, Elseve, OX, L'Oréal, Dove, Pantene, Niely, Novex, Seda, Kolene.`;
 
             try {
+                // Endpoint corrigido com trim na chave
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgStore}}]}] })
+                    body: JSON.stringify({ contents: [{parts: [{text: prompt}, {inline_data: {mime_type: "image/jpeg", data: imgBase64}}]}] })
                 });
 
                 const data = await res.json();
                 
-                if(data.error) {
-                    throw new Error(data.error.message + " (" + data.error.code + ")");
-                }
+                if(data.error) throw new Error(data.error.message);
 
                 let txt = data.candidates[0].content.parts[0].text;
                 const match = txt.match(/\{[\s\S]*\}/);
-                if(!match) throw new Error("A IA não conseguiu formatar os dados. Tente outra foto.");
-                
                 const json = JSON.parse(match[0]);
+                
                 const area = document.getElementById('results');
-                area.innerHTML = `<h3 style="margin:20px 0 10px 0; font-size:16px;">Resultados:</h3>`;
+                area.innerHTML = `<h3 style="margin:15px 0 10px 0; font-size:16px;">Resultados:</h3>`;
                 
                 json.produtos.forEach(p => {
                     area.innerHTML += `
@@ -189,10 +182,10 @@
                         </div>`;
                 });
                 btn.style.display = 'none';
-                document.getElementById('btn-clear').style.display = 'flex';
+                document.getElementById('reset').style.display = 'flex';
 
             } catch (err) {
-                alert("Erro: " + err.message);
+                alert("Verifique se sua chave está correta. Erro: " + err.message);
                 btn.disabled = false;
             }
             loader.style.display = 'none';
