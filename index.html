@@ -5,44 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>DutyPrice 1.1v</title>
+    <title>DutyPrice 1.3v</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --dabelle-blue: #002D58;
-            --dabelle-blue-light: #004586;
             --dabelle-gold: #C5A059;
             --ios-bg: #F2F2F7;
             --white: #FFFFFF;
-            --gray-text: #8E8E93;
-            --success: #34C759;
             --danger: #FF3B30;
+            --success: #34C759;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             background-color: var(--ios-bg); margin: 0;
             padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
-            color: #1C1C1E;
         }
 
         header {
-            background: linear-gradient(180deg, var(--dabelle-blue), var(--dabelle-blue-light));
-            color: white; padding: 15px; text-align: center; position: relative;
+            background: var(--dabelle-blue); color: white; padding: 15px; 
+            text-align: center; position: relative;
         }
 
-        header h1 { margin: 0; font-size: 1.3rem; font-weight: 800; }
         .version-tag {
-            font-size: 0.65rem; background: rgba(255, 255, 255, 0.2);
-            padding: 2px 8px; border-radius: 10px; position: absolute; top: 10px; right: 15px;
+            font-size: 0.6rem; background: rgba(255,255,255,0.2);
+            padding: 2px 8px; border-radius: 10px; position: absolute; top: 10px; right: 10px;
         }
 
-        nav { display: flex; background: var(--white); border-bottom: 1px solid #D1D1D6; sticky; top:0; z-index:10; }
+        nav { display: flex; background: var(--white); border-bottom: 1px solid #D1D1D6; position: sticky; top:0; z-index:100; }
         nav button {
             flex: 1; padding: 15px; border: none; background: none;
-            font-weight: 600; color: var(--gray-text); font-size: 0.9rem;
+            font-weight: 600; color: #8E8E93; font-size: 0.9rem;
         }
         nav button.active { color: var(--dabelle-blue); border-bottom: 3px solid var(--dabelle-gold); }
 
@@ -54,33 +51,31 @@
             margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        h2 { font-size: 1rem; color: var(--dabelle-blue); margin: 0 0 12px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: var(--dabelle-blue); color: white; padding: 12px; border-radius: 15px; text-align: center; }
+        .stat-card b { display: block; font-size: 1.2rem; color: var(--dabelle-gold); }
 
-        /* Estilos de Entrada */
-        label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--gray-text); margin-bottom: 4px; text-transform: uppercase; }
+        label { font-size: 0.7rem; font-weight: bold; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        
         input, select {
             width: 100%; height: 48px; border-radius: 12px; border: 1px solid #E5E5EA;
-            padding: 0 15px; font-size: 1.1rem; margin-bottom: 12px; background: #F9F9F9; font-weight: 600;
+            padding: 0 15px; font-size: 1rem; margin-bottom: 12px; background: #F9F9F9; font-weight: 600;
         }
 
+        .btn-report {
+            width: 100%; padding: 12px; border-radius: 12px; border: none; 
+            font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-pdf { background: #E5E5EA; color: #333; }
+        .btn-wa { background: #25D366; color: white; }
+
         .comp-box { background: #F2F2F7; border-radius: 12px; padding: 12px; margin-top: 10px; }
-        .comp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .comp-input { width: 110px !important; margin-bottom: 0 !important; height: 42px !important; text-align: right; }
+        .comp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 
-        /* Dashboard */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-card { background: var(--dabelle-blue); color: white; padding: 15px; border-radius: 15px; text-align: center; }
-        .stat-card small { font-size: 0.65rem; text-transform: uppercase; opacity: 0.8; }
-        .stat-card div { font-size: 1.3rem; font-weight: 800; color: var(--dabelle-gold); }
-
-        canvas { max-width: 100%; margin: 10px 0; }
-
-        /* Rodapé */
         .action-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
             padding: 20px; background: rgba(255,255,255,0.9);
             backdrop-filter: blur(15px); border-top: 1px solid #D1D1D6;
-            display: none; /* Só aparece na coleta */
         }
         .btn-save {
             width: 100%; height: 56px; background: var(--dabelle-blue); color: white;
@@ -92,7 +87,7 @@
 
 <header>
     <h1>DutyPrice</h1>
-    <span class="version-tag">1.1v</span>
+    <span class="version-tag">1.3v</span>
 </header>
 
 <nav>
@@ -103,36 +98,44 @@
 <div id="view-collect" class="view active">
     <div class="card">
         <label>Nome da Loja</label>
-        <input type="text" id="store-name" placeholder="Ex: Assaí / Nova Era">
+        <input type="text" id="store-name" placeholder="Ex: Assaí Manaus">
         <label>Canal</label>
         <select id="store-channel">
-            <option value="Tradicional">Tradicional</option>
-            <option value="1-4 ckt">1 a 4 Checkouts</option>
-            <option value="5-9 ckt">5 a 9 Checkouts</option>
-            <option value="10+ ckt">10+ Checkouts</option>
             <option value="C&C">C&C (Atacarejo)</option>
+            <option value="Tradicional">Tradicional</option>
+            <option value="1-4 ckt">1-4 Checkouts</option>
+            <option value="5-9 ckt">5-9 Checkouts</option>
+            <option value="10+ ckt">10+ Checkouts</option>
         </select>
     </div>
     <div id="product-list"></div>
 </div>
 
 <div id="view-dash" class="view">
-    <div class="stats-grid">
-        <div class="stat-card"><small>Visitas</small><div id="dash-total-visits">0</div></div>
-        <div class="stat-card"><small>Média Geral</small><div id="dash-avg-price">R$ 0,00</div></div>
+    <div class="card" id="pdf-content">
+        <h3 style="color:var(--dabelle-blue); font-size: 0.9rem; margin-top:0;">FILTRAR PERÍODO</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="date" id="date-start" onchange="renderDashboard()">
+            <input type="date" id="date-end" onchange="renderDashboard()">
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">Visitas<b id="d-visitas">0</b></div>
+            <div class="stat-card">Média DaBelle<b id="d-media">R$ 0,00</b></div>
+        </div>
+        
+        <canvas id="chartCanal" height="180"></canvas>
+        <div id="history-log" style="margin-top:15px; font-size: 0.8rem;"></div>
     </div>
 
     <div class="card">
-        <h2>Presença por Canal</h2>
-        <canvas id="chartCanal" height="200"></canvas>
+        <h3 style="font-size: 0.9rem; color: var(--dabelle-blue);">EXPORTAR RELATÓRIO</h3>
+        <button class="btn-report btn-pdf" onclick="exportPDF()">📄 Baixar PDF do Período</button>
+        <button class="btn-report btn-wa" onclick="shareWhatsApp('resumo')">💬 Resumo Período (WhatsApp)</button>
+        <button class="btn-report btn-wa" style="background:#128C7E" onclick="shareWhatsApp('loja')">💬 Última Loja (WhatsApp)</button>
     </div>
 
-    <div class="card">
-        <h2>Histórico</h2>
-        <div id="history-log" style="font-size: 0.85rem;"></div>
-    </div>
-
-    <button onclick="clearAll()" style="color:var(--danger); width:100%; border:none; background:none; padding:10px;">Apagar Histórico</button>
+    <button onclick="clearAll()" style="color:var(--danger); width:100%; border:none; background:none; padding:10px; font-size:0.7rem;">APAGAR TUDO</button>
 </div>
 
 <div class="action-bar" id="footer-save">
@@ -150,31 +153,35 @@
         { cat: "Gelatina", prod: "DABELLE - GELATINA - 500G", comps: ["Salon Line", "Lola"] }
     ];
 
-    let chartInstance = null;
+    let myChart = null;
 
     function init() {
         const container = document.getElementById('product-list');
         container.innerHTML = dbSchema.map((item, idx) => `
             <div class="card">
-                <small style="color:var(--dabelle-gold); font-weight:bold;">${item.cat}</small>
-                <h2>${item.prod}</h2>
-                <input type="tel" class="db-price" placeholder="Preço DaBelle (0,00)" data-idx="${idx}" oninput="mask(this)">
+                <small style="color:var(--dabelle-gold); font-weight:800;">${item.cat}</small>
+                <h2 style="font-size: 0.9rem; margin: 5px 0 10px 0; color: var(--dabelle-blue);">${item.prod}</h2>
+                <input type="tel" class="db-price" placeholder="Preço DaBelle (0,00)" data-name="${item.prod}" oninput="m(this)">
                 <div class="comp-box">
-                    ${item.comps.map((c, cIdx) => `
+                    ${item.comps.map(c => `
                         <div class="comp-row">
-                            <span style="flex:1; font-size:0.8rem;">${c}</span>
-                            <input type="tel" class="comp-price" placeholder="0,00" data-parent="${idx}" oninput="mask(this)">
+                            <span style="font-size:0.75rem; color:#444;">${c}</span>
+                            <input type="tel" class="comp-price" placeholder="0,00" style="width:90px; height:36px; font-size:0.9rem;" oninput="m(this)">
                         </div>
                     `).join('')}
                 </div>
             </div>
         `).join('');
-        switchTab('collect');
+        
+        // Seta data de hoje nos filtros
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date-start').value = today;
+        document.getElementById('date-end').value = today;
     }
 
-    function mask(i) {
+    function m(i) {
         let v = i.value.replace(/\D/g, "");
-        if (v === "") { i.value = ""; return; }
+        if (v === "") return;
         i.value = (parseFloat(v)/100).toLocaleString('pt-BR', {minimumFractionDigits:2});
     }
 
@@ -183,81 +190,107 @@
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(`view-${t}`).classList.add('active');
         document.getElementById(`tab-${t}`).classList.add('active');
-        
-        const footer = document.getElementById('footer-save');
-        footer.style.display = (t === 'collect') ? 'block' : 'none';
-        
+        document.getElementById('footer-save').style.display = (t === 'collect') ? 'block' : 'none';
         if(t === 'dash') renderDashboard();
     }
 
     function saveVisit() {
         const store = document.getElementById('store-name').value;
-        if(!store) return alert("Nome da loja obrigatório!");
+        if(!store) return alert("Loja é obrigatória!");
 
-        const prices = Array.from(document.querySelectorAll('.db-price')).map(i => i.value);
-        const data = {
+        const prices = [];
+        document.querySelectorAll('.db-price').forEach(input => {
+            if(input.value) prices.push({ prod: input.dataset.name, price: input.value });
+        });
+
+        const visit = {
             store,
             channel: document.getElementById('store-channel').value,
-            date: new Date().toLocaleString('pt-BR'),
-            prices: prices.filter(p => p !== "")
+            date: new Date().toISOString().split('T')[0], // YYYY-MM-DD para filtro
+            displayDate: new Date().toLocaleDateString('pt-BR'),
+            prices: prices
         };
 
-        const history = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
-        history.push(data);
-        localStorage.setItem('dutyprice_db', JSON.stringify(history));
-        
-        alert("Salvo com sucesso!");
+        const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
+        db.push(visit);
+        localStorage.setItem('dutyprice_db', JSON.stringify(db));
+        alert("Visita salva!");
         location.reload();
     }
 
     function renderDashboard() {
-        const history = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
-        document.getElementById('dash-total-visits').innerText = history.length;
+        const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
+        const start = document.getElementById('date-start').value;
+        const end = document.getElementById('date-end').value;
 
-        // Cálculo de Média
-        let sum = 0, count = 0;
-        let canais = {};
+        // Filtra pelo período
+        const filtered = db.filter(v => v.date >= start && v.date <= end);
 
-        history.forEach(h => {
-            h.prices.forEach(p => {
-                sum += parseFloat(p.replace('.','').replace(',','.'));
+        document.getElementById('d-visitas').innerText = filtered.length;
+        let sum = 0, count = 0, canais = {};
+
+        filtered.forEach(v => {
+            canais[v.channel] = (canais[v.channel] || 0) + 1;
+            v.prices.forEach(p => {
+                sum += parseFloat(p.price.replace('.','').replace(',','.'));
                 count++;
             });
-            canais[h.channel] = (canais[h.channel] || 0) + 1;
         });
 
         const avg = count > 0 ? (sum / count) : 0;
-        document.getElementById('dash-avg-price').innerText = `R$ ${avg.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById('d-media').innerText = `R$ ${avg.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
 
-        // Histórico Texto
-        document.getElementById('history-log').innerHTML = history.slice().reverse().map(h => `
-            <div style="border-bottom:1px solid #eee; padding:8px 0;">
-                <b>${h.store}</b> - ${h.channel} <br> <small>${h.date}</small>
+        document.getElementById('history-log').innerHTML = filtered.slice().reverse().map(h => `
+            <div style="padding:8px 0; border-bottom:1px solid #eee;">
+                <b>${h.store}</b> - <small>${h.displayDate}</small>
             </div>
         `).join('');
 
-        // Gráfico de Canais
-        if(chartInstance) chartInstance.destroy();
+        if(myChart) myChart.destroy();
         const ctx = document.getElementById('chartCanal').getContext('2d');
-        chartInstance = new Chart(ctx, {
+        myChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: Object.keys(canais),
-                datasets: [{
-                    data: Object.values(canais),
-                    backgroundColor: ['#002D58', '#C5A059', '#004586', '#F4E8D1', '#8E8E93']
-                }]
+                datasets: [{ data: Object.values(canais), backgroundColor: ['#002D58', '#C5A059', '#004586'] }]
             },
-            options: { plugins: { legend: { position: 'bottom' } } }
+            options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
         });
     }
 
-    function clearAll() {
-        if(confirm("Apagar todos os dados?")) {
-            localStorage.removeItem('dutyprice_db');
-            renderDashboard();
-        }
+    function exportPDF() {
+        const element = document.getElementById('pdf-content');
+        const opt = {
+            margin: 10,
+            filename: `DutyPrice_Relatorio_${new Date().toLocaleDateString()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
+
+    function shareWhatsApp(type) {
+        const db = JSON.parse(localStorage.getItem('dutyprice_db') || '[]');
+        if(db.length === 0) return alert("Sem dados para enviar.");
+
+        let text = "";
+        if(type === 'loja') {
+            const last = db[db.length - 1];
+            text = `*DutyPrice - Última Loja*\n📍 *Loja:* ${last.store}\n🏢 *Canal:* ${last.channel}\n📅 *Data:* ${last.displayDate}\n\n*Preços DaBelle:*\n`;
+            last.prices.forEach(p => text += `• ${p.prod}: R$ ${p.price}\n`);
+        } else {
+            const start = document.getElementById('date-start').value;
+            const end = document.getElementById('date-end').value;
+            const filtered = db.filter(v => v.date >= start && v.date <= end);
+            text = `*DutyPrice - Resumo Período*\n📅 ${start} até ${end}\n📊 *Total Visitas:* ${filtered.length}\n\n`;
+            filtered.forEach(v => text += `✅ ${v.store} (${v.channel})\n`);
+        }
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+    }
+
+    function clearAll() { if(confirm("Apagar tudo?")) { localStorage.removeItem('dutyprice_db'); location.reload(); } }
 
     window.onload = init;
 </script>
