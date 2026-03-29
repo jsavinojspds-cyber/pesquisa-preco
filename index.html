@@ -5,304 +5,317 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DutyPrice">
-    <title>DutyPrice - DaBelle</title>
-    
+    <title>DutyPrice 1.0v</title>
     <style>
         :root {
             --dabelle-blue: #002D58;
-            --dabelle-blue-dark: #001A33;
+            --dabelle-blue-light: #004586;
             --dabelle-gold: #C5A059;
-            --bg-gray: #F2F2F7;
-            --text-dark: #1C1C1E;
-            --danger: #FF3B30;
-            --success: #34C759;
-            --card-white: #FFFFFF;
+            --ios-bg: #F2F2F7;
+            --white: #FFFFFF;
+            --gray-text: #8E8E93;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-gray);
-            color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--ios-bg);
             margin: 0;
-            /* Otimização iPhone 15 Pro Max (Dynamic Island e Bottom Bar) */
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+            color: #1C1C1E;
         }
 
+        /* Header & Versioning */
         header {
-            background: linear-gradient(135deg, var(--dabelle-blue-dark), var(--dabelle-blue));
+            background: linear-gradient(180deg, var(--dabelle-blue), var(--dabelle-blue-light));
             color: white;
-            padding: 20px 15px;
+            padding: 15px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: relative;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        header span {
-            color: var(--dabelle-gold);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            display: block;
-            margin-top: 4px;
-        }
-
-        .container { padding: 10px 16px 120px 16px; }
-
-        .category-header {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #636366;
-            margin: 25px 0 10px 4px;
-            text-transform: uppercase;
-        }
-
-        /* Card Layout */
-        .product-card {
-            background: var(--card-white);
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .product-main {
-            border-left: 4px solid var(--dabelle-gold);
-            padding-left: 12px;
-            margin-bottom: 15px;
-        }
-
-        .product-name {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--dabelle-blue);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        /* Inputs */
-        .input-wrapper { margin-top: 10px; }
+        header h1 { margin: 0; font-size: 1.3rem; font-weight: 800; }
         
-        label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #8E8E93;
-            display: block;
-            margin-bottom: 5px;
+        .version-tag {
+            font-size: 0.65rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-weight: 500;
         }
 
-        input[type="number"] {
+        /* Navigation */
+        nav {
+            display: flex;
+            background: var(--white);
+            border-bottom: 1px solid #D1D1D6;
+            padding: 5px;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        nav button.active {
+            color: var(--dabelle-blue);
+            position: relative;
+        }
+
+        nav button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 25%; width: 50%; height: 3px;
+            background: var(--dabelle-gold);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .view { display: none; padding: 16px; padding-bottom: 140px; }
+        .view.active { display: block; }
+
+        /* Form Elements */
+        .card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card h2 { font-size: 1rem; color: var(--dabelle-blue); margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
+
+        label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--gray-text); margin-bottom: 6px; text-transform: uppercase; }
+
+        input, select {
             width: 100%;
             height: 48px;
             border-radius: 12px;
-            border: 1.5px solid #E5E5EA;
+            border: 1px solid #E5E5EA;
             padding: 0 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
             background: #F9F9F9;
         }
 
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--dabelle-blue);
-            background: white;
-        }
+        input:focus { border-color: var(--dabelle-gold); outline: none; background: white; }
 
-        /* Competitors Area */
-        .competitors-list {
-            background: #F8F9FB;
-            border-radius: 14px;
+        .location-box {
+            background: #F0F7FF;
             padding: 12px;
-            margin-top: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: var(--dabelle-blue);
+            border: 1px dashed var(--dabelle-blue);
         }
 
-        .comp-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #EDEDF2;
-        }
+        /* Dashboard Stats */
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-item { background: var(--dabelle-blue); color: white; padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-item b { display: block; font-size: 1.4rem; color: var(--dabelle-gold); }
 
-        .comp-item:last-child { border-bottom: none; }
-
-        .comp-info { flex: 1; font-size: 0.9rem; font-weight: 500; color: #48484A; }
-        
-        .comp-input {
-            width: 90px !important;
-            height: 38px !important;
-            font-size: 0.95rem !important;
-            text-align: right;
-        }
-
-        /* Badges */
-        .badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 100px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-        .above { background: #FFE5E5; color: var(--danger); }
-        .below { background: #E5F9E5; color: var(--success); }
-
-        /* Floating Footer */
-        footer {
+        /* Fixed Action Button */
+        .action-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            padding: 15px 20px calc(15px + env(safe-area-inset-bottom));
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-top: 0.5px solid #C6C6C8;
-            display: flex;
-            gap: 12px;
+            padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid #D1D1D6;
         }
 
-        .btn {
-            flex: 1;
-            height: 54px;
-            border-radius: 16px;
+        .btn-save {
+            width: 100%;
+            height: 56px;
+            background: var(--dabelle-blue);
+            color: white;
             border: none;
-            font-size: 1rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
             font-weight: 700;
-            transition: opacity 0.2s;
+            box-shadow: 0 8px 20px rgba(0,45,88,0.2);
         }
 
-        .btn:active { opacity: 0.7; }
+        .btn-save:active { transform: scale(0.98); opacity: 0.9; }
 
-        .btn-camera { background: #E5E5EA; color: var(--text-dark); flex: 0 0 60px; font-size: 1.4rem; }
-        .btn-save { background: var(--dabelle-blue); color: white; box-shadow: 0 4px 12px rgba(0,45,88,0.2); }
     </style>
 </head>
 <body>
 
 <header>
     <h1>DutyPrice</h1>
-    <span>Inteligência de Mercado • DaBelle</span>
+    <span class="version-tag">1.0v</span>
 </header>
 
-<div class="container" id="main-content"></div>
+<nav>
+    <button id="tab-collect" class="active" onclick="switchTab('collect')">COLETA</button>
+    <button id="tab-dash" onclick="switchTab('dash')">DASHBOARD</button>
+</nav>
 
-<footer>
-    <button class="btn btn-camera" onclick="alert('Câmera aberta...')">📸</button>
-    <button class="btn btn-save" onclick="exportData()">Exportar Relatório</button>
-</footer>
+<div id="view-collect" class="view active">
+    <div class="card">
+        <h2>🏬 Identificação do PDV</h2>
+        <label>Nome da Loja / Razão Social</label>
+        <input type="text" id="store-name" placeholder="Ex: Atacarejo Manaus">
+        
+        <label>Canal de Venda</label>
+        <select id="store-channel">
+            <option value="Tradicional">Tradicional</option>
+            <option value="1-4 ckt">1 a 4 Checkouts</option>
+            <option value="5-9 ckt">5 a 9 Checkouts</option>
+            <option value="10+ ckt">10+ Checkouts</option>
+            <option value="C&C">C&C (Atacarejo)</option>
+        </select>
+
+        <label>Localização Atual</label>
+        <div id="loc-display" class="location-box">Obtendo bairro e cidade...</div>
+    </div>
+
+    <div id="product-area">
+        </div>
+</div>
+
+<div id="view-dash" class="view">
+    <div class="grid-stats">
+        <div class="stat-item"><b id="count-visits">0</b> Visitas</div>
+        <div class="stat-item"><b id="avg-global">R$ 0.00</b> Média DaBelle</div>
+    </div>
+    
+    <div class="card">
+        <h2>📋 Últimas Coletas</h2>
+        <div id="history-log" style="font-size: 0.85rem; color: #444;"></div>
+    </div>
+    
+    <button onclick="clearAll()" style="color:red; border:none; background:none; width:100%; padding:10px;">Limpar todos os dados</button>
+</div>
+
+<div class="action-bar">
+    <button class="btn-save" onclick="handleSave()">Salvar e Finalizar</button>
+</div>
 
 <script>
     const inventory = [
-        { cat: "Kits", prod: "DABELLE - KIT SH+COND - 425ML", comps: ["Elseve", "Pantene", "Lola", "Salon Line"] },
-        { cat: "Finalizadores", prod: "DABELLE - CREME DE PENTEAR - 270G", comps: ["Elseve", "Pantene", "Salon Line", "Skala"] },
-        { cat: "Máscaras", prod: "DABELLE - MASCARA - 400G", comps: ["Elseve", "Pantene", "Lola", "Novex"] },
-        { cat: "Óleos", prod: "DABELLE - OLEO EM CREME - 190ML", comps: ["Elseve", "Pantene", "Amend"] },
-        { cat: "Óleos", prod: "DABELLE - OLEO - 45ML", comps: ["Elseve", "Pantene", "Amend"] },
-        { cat: "Tratamento", prod: "DABELLE - CPP JUJUBA - 1KG", comps: ["Skala", "Salon Line"] },
-        { cat: "Definição", prod: "DABELLE - GELATINA - 500G", comps: ["Salon Line", "Lola"] }
+        { id: 1, name: "DABELLE - KIT SH+COND - 425ML", comps: ["Elseve", "Pantene", "Lola"] },
+        { id: 2, name: "DABELLE - CREME DE PENTEAR - 270G", comps: ["Elseve", "Skala", "Salon Line"] },
+        { id: 3, name: "DABELLE - MASCARA - 400G", comps: ["Elseve", "Novex", "Lola"] }
     ];
 
-    function init() {
-        const wrapper = document.getElementById('main-content');
-        let currentCat = '';
-        
-        inventory.forEach((item, idx) => {
-            if (item.cat !== currentCat) {
-                currentCat = item.cat;
-                const title = document.createElement('div');
-                title.className = 'category-header';
-                title.innerText = currentCat;
-                wrapper.appendChild(title);
-            }
+    let geoData = { neighborhood: "Manaus", city: "AM" };
 
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <div class="product-main">
-                    <span class="product-name">${item.prod}</span>
-                    <div id="status-${idx}"></div>
-                    <div class="input-wrapper">
-                        <label>Preço Sugerido DaBelle</label>
-                        <input type="number" step="0.01" inputmode="decimal" placeholder="R$ 0,00" 
-                               id="db-${idx}" oninput="update(${idx})">
-                    </div>
-                </div>
-                <div class="competitors-list">
-                    <label>Comparativo com Concorrentes</label>
+    function init() {
+        renderProducts();
+        updateLocation();
+        updateDashboard();
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(`view-${tab}`).classList.add('active');
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        if(tab === 'dash') updateDashboard();
+    }
+
+    function renderProducts() {
+        const container = document.getElementById('product-area');
+        container.innerHTML = inventory.map((item, idx) => `
+            <div class="card">
+                <div style="color:var(--dabelle-blue); font-weight:800; font-size:0.9rem; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:12px;">${item.name}</div>
+                <label>Preço DaBelle (R$)</label>
+                <input type="number" step="0.01" inputmode="decimal" class="price-db" data-id="${item.id}">
+                
+                <div style="background: #F2F2F7; border-radius: 12px; padding: 12px;">
+                    <label>Concorrentes</label>
                     ${item.comps.map((c, cIdx) => `
-                        <div class="comp-item">
-                            <span class="comp-info">${c}</span>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                            <span style="flex:1; font-size:0.85rem;">${c}</span>
                             <input type="number" step="0.01" inputmode="decimal" 
-                                   class="comp-input" placeholder="0,00" 
-                                   id="cp-${idx}-${cIdx}" oninput="update(${idx})">
+                                   style="width:100px; margin-bottom:0; height:38px;" 
+                                   class="price-comp" data-ref="${item.id}">
                         </div>
                     `).join('')}
                 </div>
-            `;
-            wrapper.appendChild(card);
-            loadSavedData(idx);
-        });
+            </div>
+        `).join('');
     }
 
-    function update(idx) {
-        const dbPrice = parseFloat(document.getElementById(`db-${idx}`).value) || 0;
-        const compNodes = document.querySelectorAll(`[id^="cp-${idx}-"]`);
-        const statusDiv = document.getElementById(`status-${idx}`);
-        
-        let sum = 0, count = 0;
-        compNodes.forEach(input => {
-            const val = parseFloat(input.value);
-            if(val > 0) { sum += val; count++; }
-            localStorage.setItem(input.id, input.value); // Auto-save
-        });
-        localStorage.setItem(`db-${idx}`, dbPrice); // Auto-save
-
-        if (dbPrice > 0 && count > 0) {
-            const avg = sum / count;
-            const diff = ((dbPrice / avg) - 1) * 100;
-            if (dbPrice > avg) {
-                statusDiv.innerHTML = `<span class="badge above">Acima da média: +${diff.toFixed(1)}%</span>`;
-            } else {
-                statusDiv.innerHTML = `<span class="badge below">Abaixo da média: ${diff.toFixed(1)}%</span>`;
-            }
-        } else {
-            statusDiv.innerHTML = '';
+    async function updateLocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+                    const data = await res.json();
+                    geoData.neighborhood = data.address.suburb || data.address.neighbourhood || "Bairro não identificado";
+                    geoData.city = data.address.city || data.address.town || "Manaus";
+                    document.getElementById('loc-display').innerText = `${geoData.neighborhood}, ${geoData.city}`;
+                } catch (e) {
+                    document.getElementById('loc-display').innerText = "Erro na geolocalização";
+                }
+            });
         }
     }
 
-    function loadSavedData(idx) {
-        const dbInput = document.getElementById(`db-${idx}`);
-        dbInput.value = localStorage.getItem(`db-${idx}`) || '';
-        
-        const compNodes = document.querySelectorAll(`[id^="cp-${idx}-"]`);
-        compNodes.forEach(input => {
-            input.value = localStorage.getItem(input.id) || '';
+    function handleSave() {
+        const store = document.getElementById('store-name').value;
+        if (!store) { alert("Nome da loja é obrigatório!"); return; }
+
+        const entry = {
+            timestamp: Date.now(),
+            store: store,
+            channel: document.getElementById('store-channel').value,
+            location: geoData,
+            prices: []
+        };
+
+        document.querySelectorAll('.price-db').forEach(input => {
+            if(input.value) entry.prices.push(parseFloat(input.value));
         });
-        update(idx);
+
+        const db = JSON.parse(localStorage.getItem('dutyprice_base') || '[]');
+        db.push(entry);
+        localStorage.setItem('dutyprice_base', JSON.stringify(db));
+
+        alert("DutyPrice: Dados salvos localmente!");
+        location.reload(); 
     }
 
-    function exportData() {
-        let log = "--- RELATÓRIO DUTYPRICE ---\n";
-        inventory.forEach((item, idx) => {
-            const p = document.getElementById(`db-${idx}`).value;
-            if(p) log += `${item.prod}: R$ ${p}\n`;
+    function updateDashboard() {
+        const db = JSON.parse(localStorage.getItem('dutyprice_base') || '[]');
+        document.getElementById('count-visits').innerText = db.length;
+        
+        let sum = 0, count = 0;
+        const log = document.getElementById('history-log');
+        log.innerHTML = "";
+
+        db.slice(-10).reverse().forEach(v => {
+            v.prices.forEach(p => { sum += p; count++; });
+            const item = document.createElement('div');
+            item.style.padding = "10px 0";
+            item.style.borderBottom = "1px solid #eee";
+            item.innerHTML = `<strong>${v.store}</strong><br>${v.location.neighborhood} • ${new Date(v.timestamp).toLocaleDateString()}`;
+            log.appendChild(item);
         });
-        alert(log || "Nenhum preço registrado.");
-        console.log(log);
+
+        const avg = count > 0 ? (sum / count).toFixed(2) : "0.00";
+        document.getElementById('avg-global').innerText = `R$ ${avg}`;
+    }
+
+    function clearAll() {
+        if(confirm("Deseja apagar toda a base DutyPrice?")) {
+            localStorage.removeItem('dutyprice_base');
+            updateDashboard();
+        }
     }
 
     window.onload = init;
 </script>
-
 </body>
 </html>
