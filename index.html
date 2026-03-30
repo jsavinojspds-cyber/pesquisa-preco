@@ -727,6 +727,7 @@
             <button class="channel-btn" onclick="selectChannel(this,'5-9 ckt')">5-9 ckt</button>
             <button class="channel-btn" onclick="selectChannel(this,'10+ ckt')">10+ ckt</button>
             <button class="channel-btn" onclick="selectChannel(this,'Perfumaria')">Perfumaria</button>
+            <button class="channel-btn" onclick="selectChannel(this,'Drogaria')">Drogaria</button>
           </div>
         </div>
       </div>
@@ -986,60 +987,113 @@
 // ============================================================
 const CATEGORIES = [
   {
-    id: 'kits', name: 'Kits SH+Cond',
+    id: 'kits', name: 'Kit SH+Cond',
     products: [
-      { id: 'db_kit', brand: 'DaBelle', sub: 'Kit SH+Cond 425ml', prod: 'KIT SH+COND 425ML', isDB: true },
-      { id: 'el_kit', brand: 'Elseve', sub: 'Kit SH+Cond', prod: 'KIT SH+COND' },
-      { id: 'pa_kit', brand: 'Pantene', sub: 'Kit SH+Cond', prod: 'KIT SH+COND' },
-      { id: 'lo_kit', brand: 'Lola', sub: 'Kit SH+Cond', prod: 'KIT SH+COND' },
-      { id: 'sl_kit', brand: 'Salon Line', sub: 'Kit SH+Cond', prod: 'KIT SH+COND' },
+      { id: 'db_kit',  brand: 'DaBelle Hair', sub: 'Kit SH+Cond 250+175ml', prod: 'KIT SH+COND 250+175ML', ref: '250+175ml', desc: 'Abacate Nutritivo / SOS Crescimento / Cachos da Onda / Liso Arrasador / Cereja Mania / Resgata Fios / Cronograma / Mel / Explosao de Brilho / Coco Poderoso', isDB: true },
+      { id: 'eico_kit',brand: 'Eico Premium',  sub: 'Kit SH+Cond 450+400ml', prod: 'KIT SH+COND 450+400ML', ref: '450+400ml', desc: 'Mandioca / Babosa / Deslisa Fios / Cachos Definidos / Rosa Mosqueta / Cabelos Longos / Cronograma / Hidratacao Intensiva' },
+      { id: 'el_kit',  brand: 'Elseve',        sub: 'Kit SH+Cond 545ml',     prod: 'KIT SH+COND 545ML',     ref: '545ml',     desc: 'Glycolic Gloss / Liso dos Sonhos AHA / Oleo Rep Total 5 / Hidra Hialuronico / Longo dos Sonhos / Cachos dos Sonhos / Colageno Lifter' },
+      { id: 'seda_kit',brand: 'Seda',          sub: 'Kit SH+Cond 490ml',     prod: 'KIT SH+COND 490ML',     ref: '490ml',     desc: 'Liso Perfeito / Cachos / Ceramidas / Luminous UV / Toque de Seda' },
+      { id: 'pa_kit',  brand: 'Pantene',       sub: 'Kit SH+Cond 450-575ml', prod: 'KIT SH+COND 450-575ML', ref: '450-575ml', desc: 'Bambu / Colageno / Hidratacao / Restauracao / Biotina' },
+      { id: 'niely_kit',brand:'Niely Gold',    sub: 'Kit SH+Cond 450-500ml', prod: 'KIT SH+COND 450-500ML', ref: '450-500ml', desc: 'Agua de Coco / Cachos / Reconstrucao Potente / Nutri Poder / Liso Pleno / Pos Quimica / Salva Fios' },
+      { id: 'sl_kit',  brand: 'Salon Line',    sub: 'Kit SH+Cond 600ml',     prod: 'KIT SH+COND 600ML',     ref: '600ml',     desc: 'Kids Hidra / Hidra Cachinhos' },
+      { id: 'tress_kit',brand:'TRESemmé',      sub: 'Kit SH+Cond 525ml',     prod: 'KIT SH+COND 525ML',     ref: '525ml',     desc: 'Lamelar / Forca' },
+      { id: 'dove_kit',brand: 'Dove',          sub: 'Kit SH+Cond 500-525ml', prod: 'KIT SH+COND 500-525ML', ref: '500-525ml', desc: 'Bond Repair / Hialuron + Vit' },
+      { id: 'hask_kit',brand: 'Haskell',       sub: 'Kit SH+Cond 600-1000ml',prod: 'KIT SH+COND 600ml-1kg', ref: '600ml-1kg', desc: 'Cavalo Forte / Mandioca / Murumuru' },
+      { id: 'siage_kit',brand:'Siàge',         sub: 'Kit SH+Cond 375-405ml', prod: 'KIT SH+COND 375-405ML', ref: '375-405ml', desc: 'Nutri Rose / Liso Intenso / Hair Plastia' },
+    ]
+  },
+  {
+    id: 'shampoo', name: 'Shampoo',
+    products: [
+      { id: 'db_sh',   brand: 'DaBelle Hair', sub: 'Shampoo 250ml',      prod: 'SHAMPOO 250ML',      ref: '250ml',     desc: 'Abacate Nutritivo / Liso Arrasador / Cereja Mania / Cachos / SOS Crescimento / Resgata Fios / Brilho / Coco Poderoso / Mel / Crono Perfeito', isDB: true },
+      { id: 'eico_sh', brand: 'Eico Premium', sub: 'Shampoo 300-515ml',  prod: 'SHAMPOO 300-515ML',  ref: '300-515ml', desc: 'Pro Liso Magico / Pro Forca e Crescimento / Pro Oleo Sublime / Pro Tratamento Obrigatorio / Toque Final' },
+      { id: 'el_sh',   brand: 'Elseve',       sub: 'Shampoo 200-400ml',  prod: 'SHAMPOO 200-400ML',  ref: '200-400ml', desc: 'Glycolic Gloss / Liso dos Sonhos AHA / Colageno Lifter / Hidra Hialuronico / Cachos dos Sonhos / Rep Total 5' },
+      { id: 'seda_sh', brand: 'Seda',         sub: 'Shampoo 300-325ml',  prod: 'SHAMPOO 300-325ML',  ref: '300-325ml', desc: 'Pretos Luminosos / SOS Ceramidas / Cachos Definidos / Liso Perfeito / Luminous UV' },
+      { id: 'pa_sh',   brand: 'Pantene',      sub: 'Shampoo 200-400ml',  prod: 'SHAMPOO 200-400ML',  ref: '200-400ml', desc: 'Bambu / Colageno / Hidratacao / Biotina' },
+      { id: 'clear_sh',brand: 'Clear',        sub: 'Shampoo 200-400ml',  prod: 'SHAMPOO 200-400ML',  ref: '200-400ml', desc: 'Anticaspa (varias linhas) / Hidratacao Campea / Men / Ice Cool' },
+      { id: 'hs_sh',   brand: 'Head & Shoulders', sub: 'Shampoo 200ml', prod: 'SHAMPOO 200ML',       ref: '200ml',     desc: 'Limpeza Eficaz / Anticoceira / Men 3em1' },
+      { id: 'darl_sh', brand: 'Darling',      sub: 'Shampoo 350-650ml',  prod: 'SHAMPOO 350-650ML',  ref: '350-650ml', desc: '2em1 / Ceramidas / Tilia / Detox' },
+    ]
+  },
+  {
+    id: 'cond', name: 'Condicionador',
+    products: [
+      { id: 'db_co',   brand: 'DaBelle Hair', sub: 'Condicionador 200ml',     prod: 'CONDICIONADOR 200ML',     ref: '200ml',     desc: 'Abacate Nutritivo / Cachos / Liso Arrasador / Cereja Mania / Resgata Fios / SOS Crescimento / Mel / Crono Perfeito / Explosao de Brilho', isDB: true },
+      { id: 'eico_co', brand: 'Eico Premium', sub: 'Condicionador 300-515ml', prod: 'CONDICIONADOR 300-515ML', ref: '300-515ml', desc: 'Pro Liso Magico / Pro Forca e Crescimento / Pro Oleo Sublime / Pro Tratamento Obrigatorio / Toque Final' },
+      { id: 'el_co',   brand: 'Elseve',       sub: 'Condicionador 200-400ml', prod: 'CONDICIONADOR 200-400ML', ref: '200-400ml', desc: 'Glycolic Gloss / Liso dos Sonhos AHA / Colageno Lifter / Hidra Hialuronico / Cachos dos Sonhos / Rep Total 5' },
+      { id: 'seda_co', brand: 'Seda',         sub: 'Condicionador 250-325ml', prod: 'CONDICIONADOR 250-325ML', ref: '250-325ml', desc: 'Pretos Luminosos / SOS Ceramidas / Cachos Definidos / Liso Perfeito / Luminous UV' },
+      { id: 'pa_co',   brand: 'Pantene',      sub: 'Condicionador 150-400ml', prod: 'CONDICIONADOR 150-400ML', ref: '150-400ml', desc: 'Hidratacao / Liso Extremo / Restauracao / Bambu / Colageno / Biotina / Queratina' },
+      { id: 'sl_co',   brand: 'Salon Line',   sub: 'Condicionador 300ml',     prod: 'CONDICIONADOR 300ML',     ref: '300ml',     desc: 'SOS Cachos Nutritivo / SOS Coco / Bomba Vitamina' },
+      { id: 'dove_co', brand: 'Dove',         sub: 'Condicionador 150-250ml', prod: 'CONDICIONADOR 150-250ML', ref: '150-250ml', desc: 'Bond Intense Repair' },
+      { id: 'darl_co', brand: 'Darling',      sub: 'Condicionador 350ml',     prod: 'CONDICIONADOR 350ML',     ref: '350ml',     desc: 'Tilia / Ceramidas / Detox' },
+      { id: 'hask_co', brand: 'Haskell',      sub: 'Condicionador 300ml',     prod: 'CONDICIONADOR 300ML',     ref: '300ml',     desc: 'Cavalo Forte' },
     ]
   },
   {
     id: 'creme', name: 'Creme Pentear',
     products: [
-      { id: 'db_cre', brand: 'DaBelle', sub: 'Creme de Pentear', prod: 'CREME DE PENTEAR', isDB: true },
-      { id: 'el_cre', brand: 'Elseve', sub: 'Creme de Pentear', prod: 'CREME DE PENTEAR' },
-      { id: 'pa_cre', brand: 'Pantene', sub: 'Creme de Pentear', prod: 'CREME DE PENTEAR' },
-      { id: 'sl_cre', brand: 'Salon Line', sub: 'Creme de Pentear', prod: 'CREME DE PENTEAR' },
-      { id: 'sk_cre', brand: 'Skala', sub: 'Creme de Pentear', prod: 'CREME DE PENTEAR' },
+      { id: 'db_cre',  brand: 'DaBelle Hair', sub: 'Creme Pentear 270g-1kg',  prod: 'CREME PENTEAR 270G-1KG',  ref: '270g/550ml/1kg', desc: 'Cachos da Onda / Abacate Nutritivo / SOS Crescimento / Liso Arrasador / Resgata Fios / Cereja Mania / Cronograma / Brilho / Mel / Coco / Jujuba', isDB: true },
+      { id: 'eico_cre',brand: 'Eico Premium', sub: 'Creme Pentear 500ml',     prod: 'CREME PENTEAR 500ML',     ref: '500ml',         desc: 'Toque Final' },
+      { id: 'seda_cre',brand: 'Seda',         sub: 'Creme Pentear 300ml-1kg', prod: 'CREME PENTEAR 300ML-1KG', ref: '300ml-1kg',      desc: 'Recon Completa / Ceramidas / Pretos Luminosos / Liso Perfeito / Boom Definicao / Nina Secrets' },
+      { id: 'el_cre',  brand: 'Elseve',       sub: 'Creme Pentear 250ml',     prod: 'CREME PENTEAR 250ML',     ref: '250ml',         desc: 'Liso dos Sonhos AHA / Cachos dos Sonhos / Glycolic Gloss / Rep Total 5 / Hidra Hialuronico / Colageno Lifter' },
+      { id: 'sl_cre',  brand: 'Salon Line',   sub: 'Creme Pentear 300ml-1kg', prod: 'CREME PENTEAR 300ML-1KG', ref: '300ml-1kg',      desc: 'Definicao Natural / Kids Cachinhos / Def Intensa / Gelatina e Def / Cachos Ostentacao / 3x1 Super Oleos' },
+      { id: 'niely_cre',brand:'Niely Gold',   sub: 'Creme Pentear 250ml',     prod: 'CREME PENTEAR 250ML',     ref: '250ml',         desc: 'Nutricao Magica / Pos Quimica / Cachos / Hidratacao Agua de Coco / Reconstrucao / Antiquebra' },
+      { id: 'pa_cre',  brand: 'Pantene',      sub: 'Creme Pentear 240ml',     prod: 'CREME PENTEAR 240ML',     ref: '240ml',         desc: 'Bambu / Biotinamina / Liso Extremo / Anti Frizz' },
     ]
   },
   {
-    id: 'mascara', name: 'Mascaras',
+    id: 'oleo', name: 'Oleo Capilar',
     products: [
-      { id: 'db_mas', brand: 'DaBelle', sub: 'Mascara Capilar', prod: 'MASCARA CAPILAR', isDB: true },
-      { id: 'el_mas', brand: 'Elseve', sub: 'Mascara Capilar', prod: 'MASCARA CAPILAR' },
-      { id: 'pa_mas', brand: 'Pantene', sub: 'Mascara Capilar', prod: 'MASCARA CAPILAR' },
-      { id: 'lo_mas', brand: 'Lola', sub: 'Mascara Capilar', prod: 'MASCARA CAPILAR' },
-      { id: 'no_mas', brand: 'Novex', sub: 'Mascara Capilar', prod: 'MASCARA CAPILAR' },
+      { id: 'db_ole',  brand: 'DaBelle Hair', sub: 'Oleo Capilar 40-75ml',   prod: 'OLEO CAPILAR 40-75ML',   ref: '40-75ml',   desc: 'Magico Blend de Oleos / Cereja Mania / Ricino / Argan / Babosa Oliva / Coco Poder / Rosa Mosqueta / Abacate / SOS Crescimento / Spray Multiprotetor / Queratina / Mel / Jojoba', isDB: true },
+      { id: 'eico_ole',brand: 'Eico Premium', sub: 'Oleo Capilar 30-190ml',  prod: 'OLEO CAPILAR 30-190ML',  ref: '30-190ml',  desc: 'Pro Condicionador Oleo Sublime / Booster Pro Cond Reparo / Cachos Magicos / Oleo Toque Final' },
+      { id: 'el_ole',  brand: 'Elseve',       sub: 'Oleo Capilar 100ml',     prod: 'OLEO CAPILAR 100ML',     ref: '100ml',     desc: 'Extraordinario Tratamento Sublime' },
+      { id: 'ox_ole',  brand: 'OX',           sub: 'Oleo Capilar 60-120ml',  prod: 'OLEO CAPILAR 60-120ML',  ref: '60-120ml',  desc: 'Nutritivo 3em1 / Marimaria Vita Glow' },
+      { id: 'pa_ole',  brand: 'Pantene',      sub: 'Oleo Capilar 95ml',      prod: 'OLEO CAPILAR 95ML',      ref: '95ml',      desc: 'Queratina' },
+      { id: 'dove_ole',brand: 'Dove',         sub: 'Oleo Capilar 110ml',     prod: 'OLEO CAPILAR 110ML',     ref: '110ml',     desc: 'Intense Repair / Serum Bifasic Spray' },
+      { id: 'seda_ole',brand: 'Seda',         sub: 'Oleo Capilar 60ml',      prod: 'OLEO CAPILAR 60ML',      ref: '60ml',      desc: 'Toque de Seda' },
+      { id: 'sl_ole',  brand: 'Salon Line',   sub: 'Oleo Capilar 200ml',     prod: 'OLEO CAPILAR 200ML',     ref: '200ml',     desc: 'Xerosa Glamour Chic' },
     ]
   },
   {
-    id: 'oleo', name: 'Oleos',
+    id: 'leavein', name: 'Leave-in/Fluido',
     products: [
-      { id: 'db_ole', brand: 'DaBelle', sub: 'Oleo Capilar', prod: 'OLEO CAPILAR', isDB: true },
-      { id: 'el_ole', brand: 'Elseve', sub: 'Oleo Capilar', prod: 'OLEO CAPILAR' },
-      { id: 'pa_ole', brand: 'Pantene', sub: 'Oleo Capilar', prod: 'OLEO CAPILAR' },
-      { id: 'am_ole', brand: 'Amend', sub: 'Oleo Capilar', prod: 'OLEO CAPILAR' },
+      { id: 'db_lv',   brand: 'DaBelle Hair', sub: 'Leave-in 180-200ml',  prod: 'LEAVE-IN 180-200ML',  ref: '180-200ml', desc: 'Oleo Creme Cachos da Onda / Oleo Creme Resgata Fios / Oleo Creme Cereja Mania / Tratamento Obrigatorio / Cronograma Selante / Blindagem Cereja Mania / Mel / Coco Poderoso', isDB: true },
+      { id: 'eico_lv', brand: 'Eico Premium', sub: 'Fluido 200ml',        prod: 'FLUIDO 200ML',        ref: '200ml',     desc: 'Fluido Pro Liso Magico / Fluido Pro Tratamento Obrigatorio / Fluido Pro Forca e Crescimento / Pro Oleo Sublime / Fluido Toque Final' },
+      { id: 'el_lv',   brand: 'Elseve',       sub: 'Leave-in 50-500ml',   prod: 'LEAVE-IN 50-500ML',   ref: '50-500ml',  desc: 'Serum Liso dos Sonhos / Cachos dos Sonhos 3em1 / Cicatri Renov / Reparador Pontas Glycolic' },
+      { id: 'niely_lv',brand: 'Niely Gold',   sub: 'Reparador Pontas 42ml',prod: 'REPARADOR PONTAS 42ML',ref: '42ml',     desc: 'Reparador de Pontas (varias linhas)' },
+      { id: 'lola_lv', brand: 'Lola',         sub: 'Tonico Rapunzel 230ml',prod: 'TONICO RAPUNZEL 230ML',ref: '230ml',   desc: 'Tonico Rapunzel Crescimento' },
     ]
   },
   {
-    id: 'trat1kg', name: 'Trat. 1KG',
+    id: 'gel', name: 'Gelatina',
     products: [
-      { id: 'db_1kg', brand: 'DaBelle', sub: 'Tratamento 1KG', prod: 'TRATAMENTO 1KG', isDB: true },
-      { id: 'sk_1kg', brand: 'Skala', sub: 'Tratamento 1KG', prod: 'TRATAMENTO 1KG' },
-      { id: 'sl_1kg', brand: 'Salon Line', sub: 'Tratamento 1KG', prod: 'TRATAMENTO 1KG' },
+      { id: 'db_gel',  brand: 'DaBelle Hair', sub: 'Gelatina 270-800g',   prod: 'GELATINA 270-800G',   ref: '270-800g',  desc: 'Jujuba Morango / Jujuba Melancia / Jujuba Uva / Jujuba Laranja / Cachos da Onda / Cachos da Onda Ultrafix / Abacate Nutritivo / Cereja Mania', isDB: true },
+      { id: 'sl_gel',  brand: 'Salon Line',   sub: 'Gelatina 400-550g',   prod: 'GELATINA 400-550G',   ref: '400-550g',  desc: 'TodeCacho Super Definicao / Super Volume / Def Natural / Kids Morango / Gelatina Super Oleos / Kids 5em1' },
+      { id: 'kol_gel', brand: 'Kolene',       sub: 'Gelatina Rosa 500g',  prod: 'GELATINA ROSA 500G',  ref: '500g',      desc: 'Rosa' },
     ]
   },
   {
-    id: 'gel', name: 'Gelatinas',
+    id: 'mascara', name: 'Mascara Capilar',
     products: [
-      { id: 'db_gel', brand: 'DaBelle', sub: 'Gelatina Capilar', prod: 'GELATINA CAPILAR', isDB: true },
-      { id: 'sl_gel', brand: 'Salon Line', sub: 'Gelatina', prod: 'GELATINA' },
-      { id: 'lo_gel', brand: 'Lola', sub: 'Gelatina Capilar', prod: 'GELATINA CAPILAR' },
+      { id: 'db_mas',  brand: 'DaBelle Hair', sub: 'Mascara 800g-1kg',    prod: 'MASCARA 800G-1KG',    ref: '800g/1kg',  desc: 'Abacate Nutritivo / SOS Crescimento / Cachos / Liso Arrasador / Resgata Fios / Brilho / Coco / Mel / Cereja Mania / Crono Perfeito', isDB: true },
+      { id: 'eico_mas',brand: 'Eico Premium', sub: 'Mascara 1kg',         prod: 'MASCARA 1KG',         ref: '1kg',       desc: 'Hidratacao Intensiva / Deslisa Fios / Toque Final / Cachos Definidos / Babosa / Rosa Mosqueta / Liso Magico / Oleo Sublime / Forca e Crescimento / Trat Obrigatorio' },
+      { id: 'sk_mas',  brand: 'Skala',        sub: 'Mascara 1kg',         prod: 'MASCARA 1KG',         ref: '1kg',       desc: 'Sou+Cacho / Frutastica Uva / Melancia 12em1 / Abacate / Babosa / Coco / Bomba / Acai / Cereja / Argan' },
+      { id: 'sl_mas',  brand: 'Salon Line',   sub: 'Mascara 300g-1kg',    prod: 'MASCARA 300G-1KG',    ref: '300g-1kg',  desc: 'Bomba Vitamina / TodeCacho / SOS Cachos Multifuncional / Melancia 3em1' },
+      { id: 'hask_mas',brand: 'Haskell',      sub: 'Mascara 1kg',         prod: 'MASCARA 1KG',         ref: '1kg',       desc: 'Cavalo Forte / Mandioca / Murumuru / Supermascara' },
+      { id: 'orig_mas',brand: 'Origem',       sub: 'Mascara 1kg',         prod: 'MASCARA 1KG',         ref: '1kg',       desc: 'Oleo de Coco / Oleo de Argan / Cachos Controlados' },
     ]
-  }
+  },
+  {
+    id: 'tonico', name: 'Tonico/Reparador',
+    products: [
+      { id: 'db_ton',  brand: 'DaBelle Hair', sub: 'Tonico 75-100ml',     prod: 'TONICO 75-100ML',     ref: '75-100ml',  desc: 'Tonico SOS Crescimento / Tonico Crono Perfeito / Oleo de Umectacao Cachos da Onda', isDB: true },
+      { id: 'eico_ton',brand: 'Eico Premium', sub: 'Oleo Toque Final 100ml',prod:'OLEO TOQUE FINAL 100ML',ref:'100ml',    desc: 'Tratamento Eico 1761 Oleo Toque Final' },
+      { id: 'el_ton',  brand: 'Elseve',       sub: 'Serum 100ml',         prod: 'SERUM 100ML',         ref: '100ml',     desc: 'Serum Colageno Lifter' },
+      { id: 'pa_ton',  brand: 'Pantene',      sub: 'Tonico 52ml',         prod: 'TONICO 52ML',         ref: '52ml',      desc: 'Tonico Biotinamina B3 Antiqueda' },
+      { id: 'gota_ton',brand: 'Gota Dourada', sub: 'Tonico 100ml',        prod: 'TONICO 100ML',        ref: '100ml',     desc: 'Tonico Capilar Fortalecimento' },
+      { id: 'niely_ton',brand:'Niely Gold',   sub: 'Reparador 42ml',      prod: 'REPARADOR 42ML',      ref: '42ml',      desc: 'Reparador de Pontas (varias linhas)' },
+    ]
+  },
 ];
 
 
@@ -1140,13 +1194,15 @@ function renderPriceRows() {
     row.className = 'price-row';
     const dbClass = p.isDB ? ' dabelle' : '';
     const inpClass = p.isDB ? ' dabelle-inp' : '';
-    // Restore saved value from priceState
     const savedVal = priceState[p.id] || '';
+    const refBadge = p.ref ? '<span style="font-size:9px;background:var(--bg);color:var(--text3);border-radius:4px;padding:1px 5px;margin-left:4px;font-weight:500">' + p.ref + '</span>' : '';
+    const descText = p.desc || p.sub;
+    const descLine = '<small style="color:var(--text3);font-size:9px;line-height:1.3;display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:165px">' + descText + '</small>';
     row.innerHTML = `
       <div class="brand-dot ${p.isDB ? 'db' : 'comp'}"></div>
-      <div class="price-brand${dbClass}">
-        ${p.brand}
-        <small>${p.sub}</small>
+      <div class="price-brand${dbClass}" style="min-width:0;flex:1">
+        <div style="display:flex;align-items:center;gap:2px">${p.brand}${refBadge}</div>
+        ${descLine}
       </div>
       <div class="price-input-wrap">
         <input class="price-inp${inpClass}" type="tel" id="inp_${p.id}"
@@ -1839,6 +1895,7 @@ function renderMapa() {
     '5-9 ckt':    { bg:'rgba(197,160,89,0.15)',color:'#8a6820' },
     '10+ ckt':    { bg:'rgba(255,149,0,0.12)',color:'#b36b00' },
     'Perfumaria':  { bg:'rgba(175,82,222,0.12)',color:'#8944ab' },
+    'Drogaria':    { bg:'rgba(255,45,85,0.1)',  color:'#d4003d' },
     'Outros':     { bg:'rgba(142,142,147,0.12)',color:'#636366' },
   };
 
@@ -1966,7 +2023,7 @@ function mapaClick(uf) {
 // ============================================================
 // PREÇOS DABELLE — TABELA POR CANAL
 // ============================================================
-const CHANNELS_ORDER = ['C&C','Tradicional','1-4 ckt','5-9 ckt','10+ ckt','Perfumaria'];
+const CHANNELS_ORDER = ['C&C','Tradicional','1-4 ckt','5-9 ckt','10+ ckt','Perfumaria','Drogaria'];
 let precosCat = 'kits';
 let precosUF  = 'TODOS';  // 'TODOS' or specific UF
 
